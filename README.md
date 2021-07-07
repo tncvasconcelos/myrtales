@@ -1,19 +1,24 @@
 # myrtales
+ 
+This is a repo to organize the analyses of diversification and trait evolution in Myrtales. 
+ 
+Description of folders: 
+ 
+- **datasets/** 
 
-This is a repo to organize the analyses of diversification and trait evolution in Myrtales.
+Tables with traits to be analyzed. 
 
-Description of folders:
+- **plots** 
 
-- **datasets/**
-Tables with traits to be analyzed.
+Folder to store plots. 
 
-- **plots**
-Folder to store plots.
+- **R** 
 
-- **R**
-> script myrtales_data_tidyng.R
-Script to make phylogeny and dataset talk to each other and to visualize the states at the tips of the tree. It may need some adjustments depending on the trait.
+> script myrtales_data_tidyng.R 
 
-- **tree**
-Folder to store trees. 
+Script to make phylogeny and dataset talk to each other and to visualize the states at the tips of the tree. It may need some adjustments depending on the trait. 
+
+- **tree** 
+
+Folder to store trees.  
 
