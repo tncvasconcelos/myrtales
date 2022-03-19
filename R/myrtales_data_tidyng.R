@@ -31,7 +31,7 @@ tidyng.Myrtales.tree <- function(tree, tips_to_drop) {
 #-------------------------------------------------
 #-------------------------------------------------
 # Set wd as the repo
-# setwd("~/Desktop/Colabs/Eve_MyrtalesPAFTOL/myrtales/")
+setwd("~/Desktop/WCVP_special_issue/Eve_MyrtalesPAFTOL/myrtales/")
 # rm(list=ls())
 
 # Load packages
@@ -44,6 +44,7 @@ tree <- read.tree("./tree/myrtales_dated_final.tre")
 tips_to_drop_table <- read.csv("./tree/tips_to_drop_final.csv", h=T)
 tips_to_drop <- as.character(tips_to_drop_table[tips_to_drop_table$to_drop=="x",][,"tip"])
 tree_pruned <- tidyng.Myrtales.tree(tree, tips_to_drop)
+write.tree(tree_pruned, file="./tree/myrtales_pruned.tre")
 
 # Load most up to date datasets
 traits <- read.csv("./datasets/fruit_example.csv")

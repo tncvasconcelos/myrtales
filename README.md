@@ -22,3 +22,6 @@ Script to make phylogeny and dataset talk to each other and to visualize the sta
 
 Folder to store trees.  
 
+
+
+GBIF.org (19 March 2022) GBIF Occurrence Download https://doi.org/10.15468/dl.ba76td
