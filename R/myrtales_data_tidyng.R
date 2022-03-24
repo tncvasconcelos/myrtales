@@ -7,22 +7,30 @@ tidyng.Myrtales.tree <- function(tree, tips_to_drop) {
   tips <- c()
   for(i in 1:length(tmp)){
    tip0 <- tmp[[i]]
+    family <- tip0[1]
     genus <- tip0[2]
     if(i == grep("Pimenta_pseudocaryophyllus",tree_pruned$tip.label)) {
-      tips[i] <- "Pseudocaryophyllus"
+      tips[i] <- paste(family, "Pseudocaryophyllus", sep="_")
     } else {
     if(!is.na(tip0[3])){
       species <- tip0[3:length(tip0)]
-      tips[i] <- paste(genus, paste(species, collapse="_"), sep="_")
+      tips[i] <- paste(family, genus, paste(species, collapse="_"), sep="_")
     } else {
       species <- ""
-      tips[i] <- paste0(genus, species)
+      tips[i] <- paste0(family,"_", genus, species)
     }
     }
   }
+  tips <- sapply(strsplit(tips, "_"), function(x) {
+    g <- seq_along(x)
+    g[g < 1] <- 1
+    g[g > 2 ] <- 2
+    paste(tapply(x, g, paste, collapse = "-"), collapse = "_")
+  })
   tree_pruned$tip.label <- tips
   # Removing epiphet
-  tree_pruned$tip.label <- gsub("\\_.*", "",tree_pruned$tip.label)
+
+  tree_pruned$tip.label <- gsub("\\-.*", "",tree_pruned$tip.label)
   return(tree_pruned)
 }
 

@@ -22,18 +22,34 @@ all_vars_myrtales <- subset(all_vars_myrtales, grepl(" ", all_vars_myrtales$taxo
 
 # Getting most common life form for each genus
 all_genera <- unique(all_vars_myrtales$genus)
-life_forms <- data.frame(genera=all_genera, most_common_life_form=NA)
+life_forms <- data.frame(family=NA,genera=all_genera, most_common_life_form=NA)
 for(i in 1:length(all_genera)) {
    one_genus <- all_genera[i]
    one_subset <-  subset(all_vars_myrtales, all_vars_myrtales$genus==one_genus)
+   one_family <- unique(one_subset$family)
    one_subset <-  subset(one_subset, one_subset$lifeform_description!="")
    if(nrow(one_subset)>0) {
-        life_forms[i,2] <- names(sort(table(one_subset$lifeform_description), decreasing=T))[1]
+        life_forms[i,3] <- names(sort(table(one_subset$lifeform_description), decreasing=T))[1]
    }
+   life_forms[i,1] <- one_family
    cat(i, "\r")
 }
+
+# cross-checking against genera sampled in the tree
+tree <- read.tree("tree/myrtales_pruned.tre")
+genera_from_tree <- unlist(lapply(strsplit(tree$tip.label, "_"), "[[", 2))
+family_from_tree <- unlist(lapply(strsplit(tree$tip.label, "_"), "[[", 1))
+#Attention: these genera seems to be missing in the WCVP dataset:
+missing_genera <- genera_from_tree[!genera_from_tree %in% life_forms$genera]
+#[1] "Sonderothamnus" "Stylapterus"    "Brachysiphon"   "Glischrocolla"  "Endonema"       "Henriettella"   "Myriaspora" 
+#[8] "Loreya"         "Tococa"         "Necramium"      "Mecranium"      "Anaectocalyx"   "Charianthus"    "Tetrazygia" 
+#[15] "Calycogonium"   "Pachyanthus"    "Catocoryne"     "Killipia"       "Pleiochiton"    "Allomorphia"    "Dolichoura"
+#[22] "Behuria"        "Rupestrea"      "Tibouchinopsis" "Microlepis"     "Svitramia"      "Dyonicha"       "Dicrananthera" #[29] "Leiostegia"     "Potheranthera"  "Pseudanamomis"  "Astereomyrtus"  "Lamarchea"      "Conothamnus"   
+missing_genera_families <- family_from_tree[!genera_from_tree %in% life_forms$genera]
+life_forms <- rbind(life_forms, data.frame(family=missing_genera_families, genera=missing_genera, most_common_life_form=NA))
+life_forms <- subset(life_forms, life_forms$genera %in% genera_from_tree)
 write.csv(life_forms, file="most_common_life_form.csv",row.names = F)
 
-# proportion NA 37.1%
+# proportion NA 27.5%
 length(which(is.na(life_forms$most_common_life_form))) /length(all_genera)
 
