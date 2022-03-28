@@ -63,6 +63,7 @@ cultivated <- read.csv("cultivated_species.csv")
 for(family_index in 1:length(myrtales_families)){
   one_subset <- subset(gbif_data, gbif_data$family == myrtales_families[family_index]) #subsetting to make it more manageble
   cleaned_points <- subset(one_subset, one_subset$basisOfRecord == "PRESERVED_SPECIMEN")
+  cleaned_points <- subset(cleaned_points, one_subset$scientificName!="")
   cleaned_points <- FilterWCVP_genus(cleaned_points, all_vars, twgd_data)
   for(issue_index in 1:nrow(issues_to_remove)) {
     cleaned_points <- subset(cleaned_points, !grepl(issues_to_remove$issues_to_remove[issue_index], cleaned_points$issue))
@@ -70,18 +71,17 @@ for(family_index in 1:length(myrtales_families)){
   for(cultivated_index in 1:nrow(cultivated)) {
     cleaned_points <- subset(cleaned_points, !grepl(cultivated$cultivated_species[cultivated_index], cleaned_points$species))
   }
+  subset_reference_table <- subset(reference_table, reference_table$gbif_name %in% unique(cleaned_points$scientificName))
+  if(nrow(subset_reference_table)>0){
+    cleaned_points <- FilterWCVP(cleaned_points, all_vars, subset_reference_table, twgd_data) # This will filter the GBIF points acording to WCVP for species
+  }
   # Cleaning common problems:
-  cleaned_points <- subset(cleaned_points, one_subset$scientificName!="")
   cleaned_points <- RemoveNoDecimal(cleaned_points, lon="decimalLongitude", lat="decimalLatitude")
   cleaned_points <- RemoveCentroids(cleaned_points, lon="decimalLongitude", lat="decimalLatitude")
   cleaned_points <- RemoveDuplicates(cleaned_points, lon="decimalLongitude", lat="decimalLatitude")
   cleaned_points <- RemoveOutliers(cleaned_points, species="scientificName", lon="decimalLongitude", lat="decimalLatitude")
-  cleaned_points <- RemoveSeaPoints(cleaned_points, lon="decimalLongitude", lat="decimalLatitude")
   cleaned_points <- RemoveZeros(cleaned_points, lon="decimalLongitude", lat="decimalLatitude")
-  subset_reference_table <- subset(reference_table, reference_table$gbif_name %in% unique(cleaned_points$scientificName))
-  if(nrow(subset_reference_table)>0){
-    cleaned_points <- FilterWCVP(cleaned_points, all_vars, subset_reference_table, twgd_data) # This will filter the GBIF points acording to WCVP
-  }
+  cleaned_points <- RemoveSeaPoints(cleaned_points, lon="decimalLongitude", lat="decimalLatitude")
   write.csv(cleaned_points, file=paste0("myrtales_gbif/", myrtales_families[family_index], "_cleaned_points.csv"), row.names=F)
 }
 
@@ -91,7 +91,6 @@ all_cleaned_points_files <- all_cleaned_points_files[grep("cleaned", all_cleaned
 labels <- gsub(paste0(c("myrtales_gbif/","_cleaned_points.csv"), collapse="|"),"", all_cleaned_points_files)
 all_cleaned_points <- lapply(all_cleaned_points_files, read.csv)
 names(all_cleaned_points) <- labels
-
 
 # Plotting to inspect distributions
 {; for(family_index in 6:length(all_cleaned_points)) {
