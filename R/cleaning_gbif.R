@@ -56,12 +56,22 @@ path="/Users/thaisvasconcelos/Desktop/WCVP_special_issue/WCVPtools/wgsrpd-master
 # If labcomputer
 path="../WCVPtools/wgsrpd-master/level3/level3.shp"
 #-----------------------------
-twgd_data <- suppressWarnings(maptools::readShapeSpatial(path))
 
+twgd_data <- suppressWarnings(maptools::readShapeSpatial(path))
+issues_to_remove <- read.csv("gbif_issues_to_remove.csv")
+cultivated <- read.csv("cultivated_species.csv")
 for(family_index in 1:length(myrtales_families)){
   one_subset <- subset(gbif_data, gbif_data$family == myrtales_families[family_index]) #subsetting to make it more manageble
+  cleaned_points <- subset(one_subset, one_subset$basisOfRecord == "PRESERVED_SPECIMEN")
+  cleaned_points <- FilterWCVP_genus(cleaned_points, all_vars, twgd_data)
+  for(issue_index in 1:nrow(issues_to_remove)) {
+    cleaned_points <- subset(cleaned_points, !grepl(issues_to_remove$issues_to_remove[issue_index], cleaned_points$issue))
+  }
+  for(cultivated_index in 1:nrow(cultivated)) {
+    cleaned_points <- subset(cleaned_points, !grepl(cultivated$cultivated_species[cultivated_index], cleaned_points$species))
+  }
   # Cleaning common problems:
-  cleaned_points <- subset(one_subset, one_subset$scientificName!="")
+  cleaned_points <- subset(cleaned_points, one_subset$scientificName!="")
   cleaned_points <- RemoveNoDecimal(cleaned_points, lon="decimalLongitude", lat="decimalLatitude")
   cleaned_points <- RemoveCentroids(cleaned_points, lon="decimalLongitude", lat="decimalLatitude")
   cleaned_points <- RemoveDuplicates(cleaned_points, lon="decimalLongitude", lat="decimalLatitude")
@@ -74,4 +84,33 @@ for(family_index in 1:length(myrtales_families)){
   }
   write.csv(cleaned_points, file=paste0("myrtales_gbif/", myrtales_families[family_index], "_cleaned_points.csv"), row.names=F)
 }
+
+#------------------------
+all_cleaned_points_files <- list.files("myrtales_gbif", full.names = T)
+all_cleaned_points_files <- all_cleaned_points_files[grep("cleaned", all_cleaned_points_files)]
+labels <- gsub(paste0(c("myrtales_gbif/","_cleaned_points.csv"), collapse="|"),"", all_cleaned_points_files)
+all_cleaned_points <- lapply(all_cleaned_points_files, read.csv)
+names(all_cleaned_points) <- labels
+
+
+# Plotting to inspect distributions
+{; for(family_index in 6:length(all_cleaned_points)) {
+  points_cleaned <- all_cleaned_points[[family_index]]
+  points_cleaned <- subset(points_cleaned, points_cleaned$basisOfRecord == "PRESERVED_SPECIMEN")
+  genera <- unique(points_cleaned$genus)
+  genera <- subset(genera, genera!="")
+  pdf(paste0("plots/", names(all_cleaned_points)[family_index], "_points.pdf"))
+  for(genus_index in 1:length(genera)){
+    tmp_subset <- as.data.frame(points_cleaned[points_cleaned$genus==genera[genus_index],])
+    coord <- tmp_subset[,c("decimalLongitude","decimalLatitude")]
+    coordinates(coord) <- ~ decimalLongitude + decimalLatitude
+    plot(wrld_simpl)
+    plot(coord, col="red", add=T)
+    title(genera[genus_index])
+    print(genus_index)
+  }
+  dev.off()
+}
+  beepr::beep("fanfare"); } 
+
 
