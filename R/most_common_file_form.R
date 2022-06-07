@@ -22,6 +22,7 @@ all_vars_myrtales <- subset(all_vars_myrtales, grepl(" ", all_vars_myrtales$taxo
 
 # Getting most common life form for each genus
 all_genera <- unique(all_vars_myrtales$genus)
+scoring <- read.csv("datasets/lifeform_mapping.csv")
 life_forms <- data.frame(family=NA,genera=all_genera, most_common_life_form=NA)
 for(i in 1:length(all_genera)) {
    one_genus <- all_genera[i]
@@ -29,27 +30,25 @@ for(i in 1:length(all_genera)) {
    one_family <- unique(one_subset$family)
    one_subset <-  subset(one_subset, one_subset$lifeform_description!="")
    if(nrow(one_subset)>0) {
-        life_forms[i,3] <- names(sort(table(one_subset$lifeform_description), decreasing=T))[1]
+      all_life_forms <- one_subset$lifeform_description
+      lumped_life_forms <- c()
+      for(life_form_index in 1:length(all_life_forms)){
+         lumped_life_forms[life_form_index] <- scoring$humphreys_lifeform[scoring$lifeform_description==all_life_forms[life_form_index]]
+      }
+      
+      life_forms[i,3] <- names(sort(table(lumped_life_forms), decreasing=T))[1]
    }
    life_forms[i,1] <- one_family
    cat(i, "\r")
 }
 
 # cross-checking against genera sampled in the tree
-tree <- read.tree("tree/myrtales_pruned.tre")
-genera_from_tree <- unlist(lapply(strsplit(tree$tip.label, "_"), "[[", 2))
-family_from_tree <- unlist(lapply(strsplit(tree$tip.label, "_"), "[[", 1))
-#Attention: these genera seems to be missing in the WCVP dataset:
-missing_genera <- genera_from_tree[!genera_from_tree %in% life_forms$genera]
-#[1] "Sonderothamnus" "Stylapterus"    "Brachysiphon"   "Glischrocolla"  "Endonema"       "Henriettella"   "Myriaspora" 
-#[8] "Loreya"         "Tococa"         "Necramium"      "Mecranium"      "Anaectocalyx"   "Charianthus"    "Tetrazygia" 
-#[15] "Calycogonium"   "Pachyanthus"    "Catocoryne"     "Killipia"       "Pleiochiton"    "Allomorphia"    "Dolichoura"
-#[22] "Behuria"        "Rupestrea"      "Tibouchinopsis" "Microlepis"     "Svitramia"      "Dyonicha"       "Dicrananthera" #[29] "Leiostegia"     "Potheranthera"  "Pseudanamomis"  "Astereomyrtus"  "Lamarchea"      "Conothamnus"   
-missing_genera_families <- family_from_tree[!genera_from_tree %in% life_forms$genera]
-life_forms <- rbind(life_forms, data.frame(family=missing_genera_families, genera=missing_genera, most_common_life_form=NA))
-life_forms <- subset(life_forms, life_forms$genera %in% genera_from_tree)
-write.csv(life_forms, file="most_common_life_form.csv",row.names = F)
+tree_genera <- read.csv("datasets/prevalent_life_form.csv")
+tree_genera$keep <- "YES"
+life_forms <- merge(life_forms, tree_genera, by.x="genera", by.y="Genus", all=T)
+life_forms <- subset(life_forms, !is.na(life_forms$keep))
+write.csv(life_forms, file="life_forms_myrtales.csv", row.names = F)
 
-# proportion NA 27.5%
-length(which(is.na(life_forms$most_common_life_form))) /length(all_genera)
+
+
 

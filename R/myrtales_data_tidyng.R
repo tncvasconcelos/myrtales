@@ -29,7 +29,6 @@ tidyng.Myrtales.tree <- function(tree, tips_to_drop) {
   })
   tree_pruned$tip.label <- tips
   # Removing epiphet
-
   tree_pruned$tip.label <- gsub("\\-.*", "",tree_pruned$tip.label)
   return(tree_pruned)
 }
@@ -49,13 +48,63 @@ library(picante)
 
 # Load tree
 tree <- read.tree("./tree/myrtales_dated_final.tre")
+tree <- ladderize(tree)
 tips_to_drop_table <- read.csv("./tree/tips_to_drop_final.csv", h=T)
 tips_to_drop <- as.character(tips_to_drop_table[tips_to_drop_table$to_drop=="x",][,"tip"])
 tree_pruned <- tidyng.Myrtales.tree(tree, tips_to_drop)
 write.tree(tree_pruned, file="./tree/myrtales_pruned.tre")
 
 # Load most up to date datasets
-traits <- read.csv("./datasets/fruit_example.csv")
+# traits <- read.csv("./datasets/fruit_example.csv")
+traits <- read.csv("./datasets/Myrtales_master_table.csv")
+match_tables <- read.csv("match_trait_tree_datasets.csv")
+
+# adding missing tips:
+#traits$trait_species <- NA
+#for(i in 1:nrow(traits)) {
+#  traits$trait_species[i] <- paste(c(traits$Family[i], traits$Genus[i], traits$Species[i]), collapse="_")
+#}
+#
+#match_tables$trait_species <- NA
+#for(i in 1:nrow(match_tables)) {
+#  match_tables$trait_species[i] <- paste(c(match_tables$Family[i], match_tables$Genus[i], match_tables$Species[i]), collapse="_")
+#}
+#write.csv(merged_tables, file="merged_tables.csv", row.names=F)
+
+trait_dataset_curated <- read.csv("adjusting_datasets/merged_tables_curated_final.csv")
+trait_dataset_curated <- subset(trait_dataset_curated, trait_dataset_curated$match_to_tree %in% tips_to_drop_table$tip)
+to_keep <- subset(tips_to_drop_table, tips_to_drop_table$to_drop=="keep")
+trait_dataset_curated <- subset(trait_dataset_curated, trait_dataset_curated$match_to_tree %in% to_keep$tip)
+
+add_table <- as.data.frame(matrix(nrow=6, ncol=ncol(trait_dataset_curated)))
+colnames(add_table) <- colnames(trait_dataset_curated)
+add_table$match_to_tree <- to_keep$tip[!(to_keep$tip %in% trait_dataset_curated$match_to_tree)]
+trait_dataset_curated <- rbind(trait_dataset_curated, add_table)
+
+write.csv(trait_dataset_curated, file="2022-25-04_Myrtales-master-table.csv", row.names = F)
+# remove duplicated as in 
+# trait_dataset_curated$match_to_tree[duplicated(trait_dataset_curated$match_to_tree)]
+# Load back and adjust names according to tree
+
+final_dataset <- read.csv("2022-25-04_Myrtales-master-table.csv")
+tips <- final_dataset$match_to_tree
+tips[grep("Pimenta_pseudocaryophyllus",tips)] <- "Myrtaceae_Pseudocaryophyllus"
+tips <- sapply(strsplit(tips, "_"), function(x) {
+  g <- seq_along(x)
+  g[g < 1] <- 1
+  g[g > 2 ] <- 2
+  paste(tapply(x, g, paste, collapse = "-"), collapse = "_")
+})
+tips <- gsub("\\-.*", "",tips)
+final_dataset$match_to_tree <- tips
+final_dataset$Genus.b <- unlist(lapply(strsplit(tips, "_"), "[[", 2))
+
+write.csv(final_dataset, file="2022-25-04_Myrtales-master-table.csv", row.names = F)
+
+# including life_form
+life_form <- read.csv("most_common_life_form.csv")
+life_form <- subset(life_form, life_form$genera %in% final_dataset$Genus)
+write.csv(life_form, "2022-04-25_most_common_life_form.csv")
 
 # Making datasets talk to each other
 rownames(traits) <- traits[,1]

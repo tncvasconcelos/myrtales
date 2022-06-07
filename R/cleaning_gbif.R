@@ -33,7 +33,7 @@ myrtales_families <- c("Alzateaceae",
                        "Onagraceae",
                        "Penaeaceae",
                        "Vochysiaceae")
-all_vars <- subset(all_vars, all_vars$family %in% c(myrtales_families))
+all_vars <- subset(all_vars, all_vars$family %in% myrtales_families)
 
 # reference table for taxized names
 #-----------------------------
@@ -63,7 +63,7 @@ cultivated <- read.csv("cultivated_species.csv")
 for(family_index in 1:length(myrtales_families)){
   one_subset <- subset(gbif_data, gbif_data$family == myrtales_families[family_index]) #subsetting to make it more manageble
   cleaned_points <- subset(one_subset, one_subset$basisOfRecord == "PRESERVED_SPECIMEN")
-  cleaned_points <- subset(cleaned_points, one_subset$scientificName!="")
+  cleaned_points <- subset(cleaned_points, cleaned_points$scientificName!="")
   cleaned_points <- FilterWCVP_genus(cleaned_points, all_vars, twgd_data)
   for(issue_index in 1:nrow(issues_to_remove)) {
     cleaned_points <- subset(cleaned_points, !grepl(issues_to_remove$issues_to_remove[issue_index], cleaned_points$issue))
@@ -93,9 +93,8 @@ all_cleaned_points <- lapply(all_cleaned_points_files, read.csv)
 names(all_cleaned_points) <- labels
 
 # Plotting to inspect distributions
-{; for(family_index in 6:length(all_cleaned_points)) {
+{; for(family_index in 1:length(all_cleaned_points)) {
   points_cleaned <- all_cleaned_points[[family_index]]
-  points_cleaned <- subset(points_cleaned, points_cleaned$basisOfRecord == "PRESERVED_SPECIMEN")
   genera <- unique(points_cleaned$genus)
   genera <- subset(genera, genera!="")
   pdf(paste0("plots/", names(all_cleaned_points)[family_index], "_points.pdf"))
