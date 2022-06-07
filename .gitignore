@@ -39,4 +39,4 @@ vignettes/*.pdf
 .Renviron
 myrtales_gbif/
 Pilot/pilot_gbif/
-
+adjusting_datasets/
