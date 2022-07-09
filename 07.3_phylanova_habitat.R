@@ -152,7 +152,15 @@ test4$species <- rownames(test4)
 dataset_traits <- test4[,c("species","fm_scoring_fruit","main_habitat")]
 tree_pruned <- keep.tip(tree, rownames(test4))
 
-corHMM:::fitCorrelationTest(tree_pruned, dataset_traits) 
+# corhmm_fits <- corHMM:::fitCorrelationTest(tree_pruned, dataset_traits) 
+# save(corhmm_fits, file = "results/h3/corhmm_fits.Rsave")
+load("results/h3/corhmm_fits.Rsave")
+corhmm_tbl <- corHMM:::getModelTable(corhmm_fits)
+
+# conducting a lrt
+teststat <- -2 * (corhmm_tbl$lnLik[1] - corhmm_tbl$lnLik[2])
+p.val <- pchisq(teststat, df = 1, lower.tail = FALSE)
+print(p.val)
 
 
 # library
