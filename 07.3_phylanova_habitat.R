@@ -17,8 +17,9 @@ master_table <- readRDS("datasets/Myrtales_full_dataset.Rdata")
 ############################################
 # Hypothesis 3: 
 # The occupation of habitats depend on intrinsic traits related on both survival and reproduction. For example, wind pollinated species and/or those with larger, more conspicuous flowers are more species-rich in open habitats. Species with fleshy fruits and/or species with fruits with larger, fewer seeds are more species-rich in closed habitats. 
-
+#plot(sort(subset_master_table$open_canopy))
 subset_master_table <- master_table
+
 ###############################
 ### Habitat vs. corolla diameter
 test1 <- subset_master_table[c("fm_scoring_corolla_diam","main_habitat")]
@@ -27,6 +28,32 @@ test1 <- subset(test1, !is.na(test1$main_habitat))
 
 corolla_diam <- test1$fm_scoring_corolla_diam
 habitat <- test1$main_habitat
+names(corolla_diam) <- names(habitat) <- rownames(test1)
+
+tree_pruned <- keep.tip(tree, rownames(test1))
+phylANOVA(tree_pruned, habitat, corolla_diam)
+boxplot(corolla_diam~habitat)
+
+# 40% cutoff
+test1 <- subset_master_table[c("fm_scoring_corolla_diam","cutoff_40")]
+test1 <- subset(test1, !is.na(test1$fm_scoring_corolla_diam))
+test1 <- subset(test1, !is.na(test1$cutoff_40))
+
+corolla_diam <- test1$fm_scoring_corolla_diam
+habitat <- test1$cutoff_40
+names(corolla_diam) <- names(habitat) <- rownames(test1)
+
+tree_pruned <- keep.tip(tree, rownames(test1))
+phylANOVA(tree_pruned, habitat, corolla_diam)
+boxplot(corolla_diam~habitat)
+
+# 60% cutoff
+test1 <- subset_master_table[c("fm_scoring_corolla_diam","cutoff_60")]
+test1 <- subset(test1, !is.na(test1$fm_scoring_corolla_diam))
+test1 <- subset(test1, !is.na(test1$cutoff_60))
+
+corolla_diam <- test1$fm_scoring_corolla_diam
+habitat <- test1$cutoff_60
 names(corolla_diam) <- names(habitat) <- rownames(test1)
 
 tree_pruned <- keep.tip(tree, rownames(test1))
@@ -46,8 +73,72 @@ names(seed_length) <- names(habitat) <- rownames(test2)
 tree_pruned <- keep.tip(tree, rownames(test2))
 phylANOVA(tree_pruned, habitat, seed_length)
 boxplot(seed_length~habitat)
+
+# 40% cutoff
+test2 <- subset_master_table[c("seed.length.mean","cutoff_40")]
+test2 <- subset(test2, !is.na(test2$seed.length.mean))
+test2 <- subset(test2, !is.na(test2$cutoff_40))
+
+seed_length <- test2$seed.length.mean
+habitat <- test2$cutoff_40
+names(seed_length) <- names(habitat) <- rownames(test2)
+
+tree_pruned <- keep.tip(tree, rownames(test2))
+phylANOVA(tree_pruned, habitat, seed_length)
+boxplot(seed_length~habitat)
+
+# 60% cutoff
+test2 <- subset_master_table[c("seed.length.mean","cutoff_60")]
+test2 <- subset(test2, !is.na(test2$seed.length.mean))
+test2 <- subset(test2, !is.na(test2$cutoff_60))
+
+seed_length <- test2$seed.length.mean
+habitat <- test2$cutoff_60
+names(seed_length) <- names(habitat) <- rownames(test2)
+
+tree_pruned <- keep.tip(tree, rownames(test2))
+phylANOVA(tree_pruned, habitat, seed_length)
+boxplot(seed_length~habitat)
+
 ###############################
 ### Habitat vs. seed number
+test3 <- subset_master_table[c("fm_scoring_seed_number","main_habitat")]
+test3 <- subset(test3, !is.na(test3$fm_scoring_seed_number))
+test3 <- subset(test3, !is.na(test3$main_habitat))
+
+seed_number <- test3$fm_scoring_seed_number
+habitat <- test3$main_habitat
+names(seed_number) <- names(habitat) <- rownames(test3)
+
+tree_pruned <- keep.tip(tree, rownames(test3))
+phylANOVA(tree_pruned, habitat, seed_number)
+boxplot(seed_number~habitat)
+
+# 40% cutoff
+test3 <- subset_master_table[c("fm_scoring_seed_number","cutoff_40")]
+test3 <- subset(test3, !is.na(test3$fm_scoring_seed_number))
+test3 <- subset(test3, !is.na(test3$cutoff_40))
+
+seed_number <- test3$fm_scoring_seed_number
+habitat <- test3$cutoff_40
+names(seed_number) <- names(habitat) <- rownames(test3)
+
+tree_pruned <- keep.tip(tree, rownames(test3))
+phylANOVA(tree_pruned, habitat, seed_number)
+boxplot(seed_number~habitat)
+
+# 60% cutoff
+test3 <- subset_master_table[c("fm_scoring_seed_number","cutoff_60")]
+test3 <- subset(test3, !is.na(test3$fm_scoring_seed_number))
+test3 <- subset(test3, !is.na(test3$cutoff_60))
+
+seed_length <- test3$fm_scoring_seed_number
+habitat <- test3$cutoff_60
+names(seed_length) <- names(habitat) <- rownames(test3)
+
+tree_pruned <- keep.tip(tree, rownames(test3))
+phylANOVA(tree_pruned, habitat, seed_length)
+boxplot(seed_length~habitat)
 
 
 ###############################
