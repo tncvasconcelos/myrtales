@@ -1,6 +1,6 @@
 # Regression analyses 2: Dredging models
 # rm(list=ls())
-setwd("~/Desktop/WCVP_special_issue/Eve_MyrtalesPAFTOL/myrtales")
+setwd("~/2022_myrtales")
 #################################################################################################
 library(phylolm)
 library(ape)
@@ -83,14 +83,31 @@ model_div_full <- phylolm(div_rate_eps0.9~
                             meancarbon+
                             meanpH, data=master_table, phy=tree)
 
+# model_div_full <- phylolm(div_rate_eps0.9~
+#                             most_common_life_form,
+#                           data=master_table, phy=tree)
+# plot(model_div_full)
 # Dredging full model for "best" combinations
-dredge_div <- dredge(model_div_full)
-write.csv(dredge_div, file="results/h2/dredged_divrate_full.csv", row.names=F)
+# dredge_div <- dredge(model_div_full)
+# save(dredge_div, file = "results/h2/dredge_div.Rsave")
+# coefTableList <- lapply(dredge_div, coefTable)
+# write.csv(dredge_div, file="results/h2/dredged_divrate_full.csv", row.names=F)
 #----
-dredge_div <- read.csv("results/h2/dredged_divrate_full.csv") 
-dredge_div <- organize.table(dredge_div, thrsh=F)
-dredge_div <- get.rqrs(organized_table=dredge_div, full_dataset=master_table, phy=tree, dep.var="div_rate_eps0.9")
-write.csv(dredge_div, file="results/h2/dredged_divrate_organized_table.csv")
+# dredge_div <- read.csv("results/h2/dredged_divrate_full.csv") 
+load("results/h2/dredge_div.Rsave")
+subset(dredge_div, delta < 4)
+model.avg(dredge_div, subset = delta < 4)
+# model.avg(dredge_div, subset = cumsum(weight) <= .95) # get averaged coefficients
+summary(get.models(dredge_div, 1)[[1]])
+
+
+# pdf(file = "h2-results.pdf", height = 20, width = 20)
+# plot(dredge_div)
+# dev.off()
+
+# dredge_div <- organize.table(dredge_div, thrsh=F)
+# dredge_div <- get.rqrs(organized_table=dredge_div, full_dataset=master_table, phy=tree, dep.var="div_rate_eps0.9")
+# write.csv(dredge_div, file="results/h2/dredged_divrate_organized_table.csv")
 
 dredge_div[order(dredge_div$rsqs,decreasing = T),]
 
