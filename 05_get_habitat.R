@@ -99,6 +99,19 @@ for(family_index in 1:length(all_point_files)) {
   all_results[[family_index]] <- cbind(family, summary_biome)
 }
 all_results <- do.call(rbind, all_results)
-write.csv(all_results, file="myrtales_habitat.csv", row.names=F)
+write.csv(all_results, file="datasets/myrtales_habitat.csv", row.names=F)
 #View(all_results)
 #table(all_results$main_habitat)
+
+
+# adding tables for sensitivity analyses:
+habitats <- read.csv("datasets/myrtales_habitat.csv")
+habitats$cutoff_40 <- NA
+habitats$cutoff_60 <- NA
+
+for(i in 1:nrow(habitats)) {
+  habitats$cutoff_40[i] <- ifelse(habitats$open_canopy[i]>0.4,"open","closed")
+  habitats$cutoff_60[i] <- ifelse(habitats$open_canopy[i]>0.6,"open","closed")
+}
+write.csv(habitats, "datasets/myrtales_habitat.csv", row.names=F)
+
