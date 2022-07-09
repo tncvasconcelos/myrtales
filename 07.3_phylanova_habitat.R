@@ -1,6 +1,7 @@
 # Regression analyses 2: Dredging models
 # rm(list=ls())
 setwd("~/Desktop/WCVP_special_issue/Eve_MyrtalesPAFTOL/myrtales")
+setwd("~/2022_myrtales/")
 #################################################################################################
 library(phylolm)
 library(ape)

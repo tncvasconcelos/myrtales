@@ -1,6 +1,6 @@
 # Regression analyses 2: Dredging models
 # rm(list=ls())
-#setwd("~/2022_myrtales")
+setwd("~/2022_myrtales")
 setwd("~/Desktop/WCVP_special_issue/Eve_MyrtalesPAFTOL/myrtales")
 
 #################################################################################################
@@ -90,16 +90,34 @@ model_div_full <- phylolm(div_rate_eps0.9~
 #                           data=master_table, phy=tree)
 # plot(model_div_full)
 # Dredging full model for "best" combinations
- dredge_div <- dredge(model_div_full)
- save(dredge_div, file = "results/h2/dredge_div.Rsave")
+ # dredge_div <- dredge(model_div_full)
+ # save(dredge_div, file = "results/h2/dredge_div.Rsave")
 # coefTableList <- lapply(dredge_div, coefTable)
 # write.csv(dredge_div, file="results/h2/dredged_divrate_full.csv", row.names=F)
 #----
 # dredge_div <- read.csv("results/h2/dredged_divrate_full.csv") 
 
 load("results/h2/dredge_div.Rsave")
-subset(dredge_div, delta < 4)
-model.avg(dredge_div, subset = delta < 4)
+# only models with a deltaAIC below 4 are included
+mod_avg_res <- model.avg(dredge_div, subset = delta < 4)
+# summarize the model averaged result to get an estimate of standard error and assess significance
+summ_mod_avg_res <- summary(mod_avg_res)
+# we treat variables as if they are always present in the model (if not in a model, it is set to 0)
+param_table <- as.data.frame(summ_mod_avg_res$coefmat.full)
+varaible_importance <- c(summ_mod_avg_res$sw)
+names(varaible_importance)[3] <- "most_common_life_formwoody"
+names(varaible_importance)[8] <- "fm_scoring_fruitFleshy"
+param_table$sum_of_weight <- varaible_importance[match(rownames(param_table), names(varaible_importance))]
+param_table <- param_table[,c(1,2,5,4)]
+# remove the intercept term
+param_table <- param_table[-1,]
+# sort the parameters by importance (p-value)
+param_table <- param_table[order(param_table[,4]),]
+
+# nice table, wow
+print(param_table)
+
+
 # model.avg(dredge_div, subset = cumsum(weight) <= .95) # get averaged coefficients
 # summary(get.models(dredge_div, 1)[[1]])
 
