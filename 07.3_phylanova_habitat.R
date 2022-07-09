@@ -152,3 +152,20 @@ dataset_traits <- test4[,c("species","fm_scoring_fruit","main_habitat")]
 tree_pruned <- keep.tip(tree, rownames(test4))
 
 corHMM:::fitCorrelationTest(tree_pruned, dataset_traits) 
+
+
+# library
+library(ggplot2)
+
+# create a dataset
+specie <- c(rep("sorgho" , 3) , rep("poacee" , 3) , rep("banana" , 3) , rep("triticum" , 3) )
+condition <- rep(c("normal" , "stress" , "Nitrogen") , 4)
+value <- abs(rnorm(12 , 0 , 15))
+data <- data.frame(specie,condition,value)
+
+# Stacked + percent
+ggplot(dataset_traits, aes(fill=fm_scoring_fruit, x=main_habitat)) + 
+  geom_bar(stat = "count",
+           position = "stack")
+
+?geom_bar
