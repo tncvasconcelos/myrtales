@@ -116,7 +116,7 @@ param_table <- param_table[order(param_table[,4]),]
 
 # nice table, wow
 print(param_table)
-
+write.csv(param_table, file="results/h2/param_table_div.csv", row.names=F)
 
 # model.avg(dredge_div, subset = cumsum(weight) <= .95) # get averaged coefficients
 # summary(get.models(dredge_div, 1)[[1]])
@@ -152,7 +152,7 @@ model_vol_full <- phylolm(niche_through_time~
                           , data=master_table, phy=tree)
 
 # Dredging full model for "best" combinations
-dredge_vol <- dredge(dredge_vol)
+dredge_vol <- dredge(model_vol_full)
 save(dredge_vol, file = "results/h2/dredged_niche.Rsave")
 #write.csv(dredge_vol, file="results/h2/dredged_niche_full.csv", row.names=F)
 
@@ -162,8 +162,24 @@ save(dredge_vol, file = "results/h2/dredged_niche.Rsave")
 #dredge_vol <- get.rqrs(organized_table=dredge_vol, full_dataset=master_table, phy=tree, dep.var="niche_through_time")
 #write.csv(dredge_vol, file="results/h2/dredge_niche_organized_table.csv")
 
+load("results/h2/dredged_niche.Rsave")
+# only models with a deltaAIC below 4 are included
+mod_avg_res <- model.avg(dredge_vol, subset = delta < 4)
+# summarize the model averaged result to get an estimate of standard error and assess significance
+summ_mod_avg_res <- summary(mod_avg_res)
+# we treat variables as if they are always present in the model (if not in a model, it is set to 0)
+param_table <- as.data.frame(summ_mod_avg_res$coefmat.full)
+varaible_importance <- c(summ_mod_avg_res$sw)
+names(varaible_importance)[names(varaible_importance)=="most_common_life_form"] <- "most_common_life_formwoody"
+names(varaible_importance)[names(varaible_importance)=="fm_scoring_fruit"] <- "fm_scoring_fruitFleshy"
+param_table$sum_of_weight <- varaible_importance[match(rownames(param_table), names(varaible_importance))]
+param_table <- param_table[,c(1,2,5,4)]
+# remove the intercept term
+param_table <- param_table[-1,]
+# sort the parameters by importance (p-value)
+param_table <- param_table[order(param_table[,4]),]
 
-load("results/h2/dredge_div.Rsave")
-subset(dredge_div, delta < 4)
-model.avg(dredge_div, subset = delta < 4)
+# nice table, wow
+print(param_table)
+write.csv(param_table, file="results/h2/param_table_vol.csv", row.names=F)
 
