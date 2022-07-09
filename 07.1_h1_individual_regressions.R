@@ -12,10 +12,17 @@ tree <- read.tree("tree/myrtales_pruned.tre")
 master_table <- readRDS("datasets/Myrtales_full_dataset.Rdata") 
 master_table_by_clade <- readRDS("datasets/Myrtales_by_clade_dataset.Rdata") 
 
+boxplot(master_table$div_rate_eps0.9~master_table$most_common_life_form)
+
 ############################################
 ############################################
 # Vars to analyse
-div_model_var_to_keep <- c("most_common_life_form","fm_scoring_fruit","seed.length.mean","niche_through_time","fm_scoring_seed_number","fm_scoring_corolla_diam","Vol", "CHELSA_bio10_01","CHELSA_bio10_02","CHELSA_bio10_10","CHELSA_bio10_11","CHELSA_bio10_12","CHELSA_bio10_15","CHELSA_bio10_16","CHELSA_bio10_17","GLOBAL_SLOPE_10MIN","depthtobedrock2","meancarbon","meanpH","meanwatercap")
+div_model_var_to_keep <- c("most_common_life_form","fm_scoring_fruit","seed.length.mean",
+                           "niche_through_time","fm_scoring_seed_number","fm_scoring_corolla_diam",
+                           "Vol", "CHELSA_bio10_01","CHELSA_bio10_02","CHELSA_bio10_10",
+                           "CHELSA_bio10_11","CHELSA_bio10_12","CHELSA_bio10_15","CHELSA_bio10_16",
+                           "CHELSA_bio10_17","GLOBAL_SLOPE_10MIN","depthtobedrock2", "meancarbon",
+                           "meanpH","meanwatercap")
 
 # Running individual models
 subset_master_table <- master_table
@@ -70,6 +77,8 @@ for(var_index_div in 1:length(div_model_var_to_keep)) {
 
 colnames(results_div) <- c("group","n_points","d_var","predictor","r.sqr","p","slope")
 write.csv(results_div, file="results/h1/Myrtales_results_div.csv", row.names=F)
+
+
 
 #################
 # Clade specific
