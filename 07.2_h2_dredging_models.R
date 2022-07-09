@@ -1,6 +1,8 @@
 # Regression analyses 2: Dredging models
 # rm(list=ls())
-setwd("~/2022_myrtales")
+#setwd("~/2022_myrtales")
+setwd("~/Desktop/WCVP_special_issue/Eve_MyrtalesPAFTOL/myrtales")
+
 #################################################################################################
 library(phylolm)
 library(ape)
@@ -88,17 +90,18 @@ model_div_full <- phylolm(div_rate_eps0.9~
 #                           data=master_table, phy=tree)
 # plot(model_div_full)
 # Dredging full model for "best" combinations
-# dredge_div <- dredge(model_div_full)
-# save(dredge_div, file = "results/h2/dredge_div.Rsave")
+ dredge_div <- dredge(model_div_full)
+ save(dredge_div, file = "results/h2/dredge_div.Rsave")
 # coefTableList <- lapply(dredge_div, coefTable)
 # write.csv(dredge_div, file="results/h2/dredged_divrate_full.csv", row.names=F)
 #----
 # dredge_div <- read.csv("results/h2/dredged_divrate_full.csv") 
+
 load("results/h2/dredge_div.Rsave")
 subset(dredge_div, delta < 4)
 model.avg(dredge_div, subset = delta < 4)
 # model.avg(dredge_div, subset = cumsum(weight) <= .95) # get averaged coefficients
-summary(get.models(dredge_div, 1)[[1]])
+# summary(get.models(dredge_div, 1)[[1]])
 
 
 # pdf(file = "h2-results.pdf", height = 20, width = 20)
@@ -108,8 +111,7 @@ summary(get.models(dredge_div, 1)[[1]])
 # dredge_div <- organize.table(dredge_div, thrsh=F)
 # dredge_div <- get.rqrs(organized_table=dredge_div, full_dataset=master_table, phy=tree, dep.var="div_rate_eps0.9")
 # write.csv(dredge_div, file="results/h2/dredged_divrate_organized_table.csv")
-
-dredge_div[order(dredge_div$rsqs,decreasing = T),]
+# dredge_div[order(dredge_div$rsqs,decreasing = T),]
 
 
 ############################################
@@ -132,14 +134,18 @@ model_vol_full <- phylolm(niche_through_time~
                           , data=master_table, phy=tree)
 
 # Dredging full model for "best" combinations
-dredge_vol <- dredge(model_vol_full)
-write.csv(dredge_vol, file="results/h2/dredged_niche_full.csv", row.names=F)
+dredge_vol <- dredge(dredge_vol)
+save(dredge_vol, file = "results/h2/dredged_niche.Rsave")
+#write.csv(dredge_vol, file="results/h2/dredged_niche_full.csv", row.names=F)
 
 #----
-dredge_vol <- read.csv("results/h2/dredged_niche_full.csv") 
-dredge_vol <- organize.table(dredge_vol)
-dredge_vol <- get.rqrs(organized_table=dredge_vol, full_dataset=master_table, phy=tree, dep.var="niche_through_time")
-write.csv(dredge_vol, file="results/h2/dredge_niche_organized_table.csv")
+#dredge_vol <- read.csv("results/h2/dredged_niche_full.csv") 
+#dredge_vol <- organize.table(dredge_vol)
+#dredge_vol <- get.rqrs(organized_table=dredge_vol, full_dataset=master_table, phy=tree, dep.var="niche_through_time")
+#write.csv(dredge_vol, file="results/h2/dredge_niche_organized_table.csv")
 
 
+load("results/h2/dredge_div.Rsave")
+subset(dredge_div, delta < 4)
+model.avg(dredge_div, subset = delta < 4)
 
