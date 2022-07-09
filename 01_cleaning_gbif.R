@@ -92,6 +92,8 @@ labels <- gsub(paste0(c("myrtales_gbif/","_cleaned_points.csv"), collapse="|"),"
 all_cleaned_points <- lapply(all_cleaned_points_files, read.csv)
 names(all_cleaned_points) <- labels
 
+sum(unlist(lapply(all_cleaned_points, nrow)))
+
 # Plotting to inspect distributions
 {; for(family_index in 1:length(all_cleaned_points)) {
   points_cleaned <- all_cleaned_points[[family_index]]
