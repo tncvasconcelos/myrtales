@@ -1,0 +1,11 @@
+"","Estimate","Std. Error","sum_of_weight","Pr(>|z|)"
+"seed.length.mean",0.011,0.09,0.033,0.904
+"fm_scoring_seed_number",-0.008,0.049,0.044,0.876
+"fm_scoring_corolla_diam",0.027,0.142,0.056,0.85
+"CHELSA_bio10_11",-2.212,8.385,0.078,0.792
+"meanpH",-0.928,3.499,0.078,0.791
+"CHELSA_bio10_17",0.108,0.381,0.126,0.777
+"CHELSA_bio10_02",0.234,0.784,0.122,0.766
+"depthtobedrock2",7.904,11.415,0.392,0.489
+"GLOBAL_SLOPE_10MIN",-0.879,0.997,0.536,0.378
+"meanwatercap",-12.212,6.396,0.92,0.056

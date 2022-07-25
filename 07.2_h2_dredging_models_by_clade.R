@@ -54,14 +54,18 @@ organize.table <- function(table_results, thrsh=T) {
 
 # Tree
 tree <- read.tree("tree/myrtales_pruned.tre")
+#nrow(master_table)
 
 # Master table
-master_table <- readRDS("datasets/Myrtales_full_dataset.Rdata") 
+master_table_by_clade <- readRDS("datasets/Myrtales_by_clade_dataset.Rdata") 
+master_table_by_clade[which(names(master_table_by_clade)=="Vochysiaceae")] <- NULL
+master_table_by_clade[which(names(master_table_by_clade)=="Combretaceae")] <- NULL
 
+for(clade_index in 1:length(master_table_by_clade)) {
 ############################################
 ############################################
 # Key traits and environment are correlated and determine niche breadth and diversification rates of extant taxa at a global scale. 
-
+  master_table  <- master_table_by_clade[[clade_index]]  
 ############################################
 # Building global model for diversification (div rates as dependent variable)
 # here note that we're keeping only CHELSA_bio10_17 and CHELSA_bio10_11 for 
@@ -90,7 +94,7 @@ master_table <- subset(master_table, !is.na(master_table$fm_scoring_corolla_diam
 
 model_div_full <- phylolm(div_rate_eps0.9~
                             most_common_life_form+
-                            fm_scoring_fruit+
+                            #fm_scoring_fruit+
                             seed.length.mean+
                             fm_scoring_seed_number+ 
                             fm_scoring_corolla_diam+
@@ -107,14 +111,14 @@ model_div_full <- phylolm(div_rate_eps0.9~
 #                           data=master_table, phy=tree)
 # plot(model_div_full)
 # Dredging full model for "best" combinations
- # dredge_div <- dredge(model_div_full)
- # save(dredge_div, file = "results/h2/dredge_div.Rsave")
+dredge_div <- dredge(model_div_full)
+save(dredge_div, file = paste0("results/h2/",names(master_table_by_clade)[clade_index],"_dredge_div.Rsave"))
 # coefTableList <- lapply(dredge_div, coefTable)
 # write.csv(dredge_div, file="results/h2/dredged_divrate_full.csv", row.names=F)
 #----
 # dredge_div <- read.csv("results/h2/dredged_divrate_full.csv") 
 
-load("results/h2/dredge_div.Rsave")
+#load("results/h2/dredge_div.Rsave")
 # only models with a deltaAIC below 4 are included
 mod_avg_res <- model.avg(dredge_div, subset = delta < 4)
 # summarize the model averaged result to get an estimate of standard error and assess significance
@@ -122,8 +126,9 @@ summ_mod_avg_res <- summary(mod_avg_res)
 # we treat variables as if they are always present in the model (if not in a model, it is set to 0)
 param_table <- as.data.frame(summ_mod_avg_res$coefmat.full)
 varaible_importance <- c(summ_mod_avg_res$sw)
-names(varaible_importance)[3] <- "most_common_life_formwoody"
-names(varaible_importance)[8] <- "fm_scoring_fruitFleshy"
+#names(varaible_importance)[3] <- "most_common_life_formwoody"
+names(varaible_importance)[which(names(varaible_importance)=="fm_scoring_fruit")] <- "fm_scoring_fruitFleshy"
+names(varaible_importance)[which(names(varaible_importance)=="most_common_life_form")] <- "most_common_life_formwoody"
 param_table$sum_of_weight <- varaible_importance[match(rownames(param_table), names(varaible_importance))]
 param_table <- param_table[,c(1,2,5,4)]
 # remove the intercept term
@@ -133,40 +138,40 @@ param_table <- param_table[order(param_table[,4]),]
 param_table <- param_table[rev(rownames(param_table)),]
 
 # nice table, wow
-print(param_table)
+#print(param_table)
 param_table$Estimate <- round(param_table$Estimate, 3)
 param_table$`Std. Error` <- round(param_table$`Std. Error`, 3)
 param_table$sum_of_weight <- round(param_table$sum_of_weight, 3)
 param_table$`Pr(>|z|)` <- round(param_table$`Pr(>|z|)`, 3)
-write.csv(param_table, file="results/h2/param_table_div.csv", row.names=T)
-
-param_table$names <- rownames(param_table)
-param_table$names[which(param_table$names=="CHELSA_bio10_17")] <- "Precipitation of Driest Quarter (BIO17)"
-param_table$names[which(param_table$names=="most_common_life_formwoody")] <- "Most common life form (woody)"
-param_table$names[which(param_table$names=="CHELSA_bio10_02")] <- "Mean Diurnal Temperature Range (BIO2)"
-param_table$names[which(param_table$names=="meanpH")] <- "Mean soil pH"
-param_table$names[which(param_table$names=="depthtobedrock2")] <- "Depth to bedrock"
-param_table$names[which(param_table$names=="GLOBAL_SLOPE_10MIN")] <- "Global slope (topography)"
-param_table$names[which(param_table$names=="meancarbon")] <- "Mean soil carbon"
-param_table$names[which(param_table$names=="fm_scoring_fruitFleshy")] <- "Fruit type (fleshy)"
-param_table$names[which(param_table$names=="meanwatercap")] <- "Mean water capacity"
-param_table$names[which(param_table$names=="fm_scoring_seed_number")] <- "Seed number"
-param_table$names[which(param_table$names=="seed.length.mean")] <- "Seed length"
-param_table$names[which(param_table$names=="CHELSA_bio10_11")] <- "Mean Temperature of Coldest Quarter (BIO11)"
-param_table$names[which(param_table$names=="fm_scoring_corolla_diam")] <- "Flower diameter"
-param_table$color_code <- NA
-param_table$color_code[which(param_table$sum_of_weight>=0.9)] <- "red" #"#d1495b"
-#param_table$color_code[which(param_table$sum_of_weight<0.9)] <- #"#8d96a3"
-
-param_table$names <- factor(param_table$names, levels = param_table$names)
-
-p1 <- ggplot(param_table, aes(y=names, x=Estimate, 
-                              xmin=Estimate-2*`Std. Error`,xmax=Estimate+2*`Std. Error`,color=color_code)) + 
-  geom_pointrange()+
-  theme_bw() +
-  xlab("Estimate") +
-  ylab("") +
-  theme(legend.position = "none")
+write.csv(param_table, file=paste0("results/h2/",names(master_table_by_clade)[clade_index],"_param_table_div.csv"), row.names=T)
+# 
+# param_table$names <- rownames(param_table)
+# param_table$names[which(param_table$names=="CHELSA_bio10_17")] <- "Precipitation of Driest Quarter (BIO17)"
+# param_table$names[which(param_table$names=="most_common_life_formwoody")] <- "Most common life form (woody)"
+# param_table$names[which(param_table$names=="CHELSA_bio10_02")] <- "Mean Diurnal Temperature Range (BIO2)"
+# param_table$names[which(param_table$names=="meanpH")] <- "Mean soil pH"
+# param_table$names[which(param_table$names=="depthtobedrock2")] <- "Depth to bedrock"
+# param_table$names[which(param_table$names=="GLOBAL_SLOPE_10MIN")] <- "Global slope (topography)"
+# param_table$names[which(param_table$names=="meancarbon")] <- "Mean soil carbon"
+# param_table$names[which(param_table$names=="fm_scoring_fruitFleshy")] <- "Fruit type (fleshy)"
+# param_table$names[which(param_table$names=="meanwatercap")] <- "Mean water capacity"
+# param_table$names[which(param_table$names=="fm_scoring_seed_number")] <- "Seed number"
+# param_table$names[which(param_table$names=="seed.length.mean")] <- "Seed length"
+# param_table$names[which(param_table$names=="CHELSA_bio10_11")] <- "Mean Temperature of Coldest Quarter (BIO11)"
+# param_table$names[which(param_table$names=="fm_scoring_corolla_diam")] <- "Flower diameter"
+# param_table$color_code <- NA
+# param_table$color_code[which(param_table$sum_of_weight>=0.9)] <- "red" #"#d1495b"
+# #param_table$color_code[which(param_table$sum_of_weight<0.9)] <- #"#8d96a3"
+# 
+# param_table$names <- factor(param_table$names, levels = param_table$names)
+# 
+# p1 <- ggplot(param_table, aes(y=names, x=Estimate, 
+#                               xmin=Estimate-2*`Std. Error`,xmax=Estimate+2*`Std. Error`,color=color_code)) + 
+#   geom_pointrange()+
+#   theme_bw() +
+#   xlab("Estimate") +
+#   ylab("") +
+#   theme(legend.position = "none")
 
 
 # model.avg(dredge_div, subset = cumsum(weight) <= .95) # get averaged coefficients
@@ -187,7 +192,7 @@ p1 <- ggplot(param_table, aes(y=names, x=Estimate,
 ############################################
 # Building global model for niche breadth (niche breadth  as dependent variable)
 model_vol_full <- phylolm(niche_through_time~
-                            most_common_life_form+
+                            #most_common_life_form+
                             fm_scoring_fruit+
                             seed.length.mean+
                             fm_scoring_seed_number+ 
@@ -204,7 +209,8 @@ model_vol_full <- phylolm(niche_through_time~
 
 # Dredging full model for "best" combinations
 dredge_vol <- dredge(model_vol_full)
-save(dredge_vol, file = "results/h2/dredged_niche.Rsave")
+save(dredge_vol, file = paste0("results/h2/",names(master_table_by_clade)[clade_index],"_dredge_niche.Rsave"))
+
 #write.csv(dredge_vol, file="results/h2/dredged_niche_full.csv", row.names=F)
 
 #----
@@ -213,7 +219,7 @@ save(dredge_vol, file = "results/h2/dredged_niche.Rsave")
 #dredge_vol <- get.rqrs(organized_table=dredge_vol, full_dataset=master_table, phy=tree, dep.var="niche_through_time")
 #write.csv(dredge_vol, file="results/h2/dredge_niche_organized_table.csv")
 
-load("results/h2/dredged_niche.Rsave")
+#load("results/h2/dredged_niche.Rsave")
 # only models with a deltaAIC below 4 are included
 mod_avg_res <- model.avg(dredge_vol, subset = delta < 4)
 # summarize the model averaged result to get an estimate of standard error and assess significance
@@ -221,7 +227,7 @@ summ_mod_avg_res <- summary(mod_avg_res)
 # we treat variables as if they are always present in the model (if not in a model, it is set to 0)
 param_table <- as.data.frame(summ_mod_avg_res$coefmat.full)
 varaible_importance <- c(summ_mod_avg_res$sw)
-names(varaible_importance)[names(varaible_importance)=="most_common_life_form"] <- "most_common_life_formwoody"
+#names(varaible_importance)[names(varaible_importance)=="most_common_life_form"] <- "most_common_life_formwoody"
 names(varaible_importance)[names(varaible_importance)=="fm_scoring_fruit"] <- "fm_scoring_fruitFleshy"
 param_table$sum_of_weight <- varaible_importance[match(rownames(param_table), names(varaible_importance))]
 param_table <- param_table[,c(1,2,5,4)]
@@ -238,36 +244,37 @@ param_table$`Std. Error` <- round(param_table$`Std. Error`, 3)
 param_table$sum_of_weight <- round(param_table$sum_of_weight, 3)
 param_table$`Pr(>|z|)` <- round(param_table$`Pr(>|z|)`, 3)
 
-write.csv(param_table, file="results/h2/param_table_vol.csv", row.names=T)
-
-param_table$names <- rownames(param_table)
-param_table$names[which(param_table$names=="CHELSA_bio10_17")] <- "Precipitation of Driest Quarter (BIO17)"
-param_table$names[which(param_table$names=="most_common_life_formwoody")] <- "Most common life form (woody)"
-param_table$names[which(param_table$names=="CHELSA_bio10_02")] <- "Mean Diurnal Temperature Range (BIO2)"
-param_table$names[which(param_table$names=="meanpH")] <- "Mean soil pH"
-param_table$names[which(param_table$names=="depthtobedrock2")] <- "Depth to bedrock"
-param_table$names[which(param_table$names=="GLOBAL_SLOPE_10MIN")] <- "Global slope (topography)"
-param_table$names[which(param_table$names=="meancarbon")] <- "Mean soil carbon"
-param_table$names[which(param_table$names=="fm_scoring_fruitFleshy")] <- "Fruit type (fleshy)"
-param_table$names[which(param_table$names=="meanwatercap")] <- "Mean water capacity"
-param_table$names[which(param_table$names=="fm_scoring_seed_number")] <- "Seed number"
-param_table$names[which(param_table$names=="seed.length.mean")] <- "Seed length"
-param_table$names[which(param_table$names=="CHELSA_bio10_11")] <- "Mean Temperature of Coldest Quarter (BIO11)"
-param_table$names[which(param_table$names=="fm_scoring_corolla_diam")] <- "Flower diameter"
-param_table$color_code <- NA
-param_table$color_code[which(param_table$sum_of_weight>=0.9)] <- "red" #"#d1495b"
-#param_table$color_code[which(param_table$sum_of_weight<0.9)] <- #"#8d96a3"
-  
-param_table$names <- factor(param_table$names, levels = param_table$names)
-
-p2 <- ggplot(param_table, aes(y=names, x=Estimate, 
-                             xmin=Estimate-2*`Std. Error`,xmax=Estimate+2*`Std. Error`,color=color_code)) + 
-  geom_pointrange()+
-  theme_bw() +
-  xlab("Estimate") +
-  ylab("") +
-  theme(legend.position = "none")
-
-pdf("plots/figure3_globalmodels.pdf" ,height=3.5,width=10)
-grid.arrange(p1, p2, ncol=2, nrow = 1)
-dev.off()
+write.csv(param_table, file=paste0("results/h2/",names(master_table_by_clade)[clade_index],"param_table_vol.csv"), row.names=T)
+# 
+# param_table$names <- rownames(param_table)
+# param_table$names[which(param_table$names=="CHELSA_bio10_17")] <- "Precipitation of Driest Quarter (BIO17)"
+# param_table$names[which(param_table$names=="most_common_life_formwoody")] <- "Most common life form (woody)"
+# param_table$names[which(param_table$names=="CHELSA_bio10_02")] <- "Mean Diurnal Temperature Range (BIO2)"
+# param_table$names[which(param_table$names=="meanpH")] <- "Mean soil pH"
+# param_table$names[which(param_table$names=="depthtobedrock2")] <- "Depth to bedrock"
+# param_table$names[which(param_table$names=="GLOBAL_SLOPE_10MIN")] <- "Global slope (topography)"
+# param_table$names[which(param_table$names=="meancarbon")] <- "Mean soil carbon"
+# param_table$names[which(param_table$names=="fm_scoring_fruitFleshy")] <- "Fruit type (fleshy)"
+# param_table$names[which(param_table$names=="meanwatercap")] <- "Mean water capacity"
+# param_table$names[which(param_table$names=="fm_scoring_seed_number")] <- "Seed number"
+# param_table$names[which(param_table$names=="seed.length.mean")] <- "Seed length"
+# param_table$names[which(param_table$names=="CHELSA_bio10_11")] <- "Mean Temperature of Coldest Quarter (BIO11)"
+# param_table$names[which(param_table$names=="fm_scoring_corolla_diam")] <- "Flower diameter"
+# param_table$color_code <- NA
+# param_table$color_code[which(param_table$sum_of_weight>=0.9)] <- "red" #"#d1495b"
+# #param_table$color_code[which(param_table$sum_of_weight<0.9)] <- #"#8d96a3"
+# 
+# param_table$names <- factor(param_table$names, levels = param_table$names)
+# 
+# p2 <- ggplot(param_table, aes(y=names, x=Estimate, 
+#                               xmin=Estimate-2*`Std. Error`,xmax=Estimate+2*`Std. Error`,color=color_code)) + 
+#   geom_pointrange()+
+#   theme_bw() +
+#   xlab("Estimate") +
+#   ylab("") +
+#   theme(legend.position = "none")
+# 
+# pdf("plots/figure3_globalmodels.pdf" ,height=3.5,width=10)
+# grid.arrange(p1, p2, ncol=2, nrow = 1)
+# dev.off()
+}
