@@ -1,12 +1,13 @@
 # rm(list=ls())
-setwd("~/Desktop/WCVP_special_issue/Eve_MyrtalesPAFTOL/myrtales")
+setwd("~/Desktop/Pubs_inprep/WCVP_special_issue/Eve_MyrtalesPAFTOL/myrtales")
 #################################################################################################
 #---------------------------
 library(ape)
 library(phytools)
 
 # Traits
-master_table <- read.csv("datasets/2022-30-06_Myrtales-master-table.csv") 
+master_table <- read.csv("datasets/2022-09-12_Myrtales-master-table.csv") 
+
 #colnames(master_table)
 cols_to_keep <- c("X","Family","Genus","most_common_life_form","fm_scoring_fruit","seed.min","seed.max",
                   "fm_scoring_seed_number","seed.length.min","seed.length.max","seed.width.min",
@@ -51,7 +52,7 @@ combined_table$most_common_life_form[which(combined_table$most_common_life_form=
 combined_table$most_common_life_form[which(combined_table$most_common_life_form=="epiphyte")] <- "herbaceous"
 
 # Removing 0s
-combined_table <- subset(combined_table, combined_table$div_rate_eps0.9!=0)
+# combined_table <- subset(combined_table, combined_table$div_rate_eps0.9!=0)
 
 # Adding niche through time
 combined_table$niche_through_time <- combined_table$Vol / combined_table$age
@@ -62,7 +63,7 @@ combined_table$CHELSA_bio10_10 <- combined_table$CHELSA_bio10_10+273.15
 combined_table$CHELSA_bio10_11 <- combined_table$CHELSA_bio10_11+273.15
 
 # Logging all continuous vars
-combined_table$div_rate_eps0.9 <- log(combined_table$div_rate_eps0.9)
+#combined_table$div_rate_eps0.9 <- log(combined_table$div_rate_eps0.9)
 combined_table$Vol <- log(combined_table$Vol)
 combined_table$niche_through_time <- log(combined_table$niche_through_time)
 

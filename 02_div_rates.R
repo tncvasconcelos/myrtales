@@ -1,5 +1,5 @@
 # rm(list=ls())
-setwd("~/Desktop/WCVP_special_issue/Eve_MyrtalesPAFTOL/myrtales/")
+setwd("~/Desktop/Pubs_inprep/WCVP_special_issue/Eve_MyrtalesPAFTOL/myrtales")
 #################################################################################################
 #--------------------------------------------
 #--------------------------------------------
@@ -65,16 +65,23 @@ colnames(myrtales_species_total) <- c("genus","n_species","family")
 # Merge
 myrtales_final <- merge(myrtales_genera_ages, myrtales_species_total, by="genus", all = T)
 
-write.csv(myrtales_final, file="myrtales_ages&richness_table_to_check.csv", row.names = F)
-to_check <- subset(myrtales_final, is.na(myrtales_final$n_species)) # which genera are in the tree but are not accepted by the WCVP
-write.csv(to_check, file="myrtales_genera_to_check.csv", row.names=F)
+#write.csv(myrtales_final, file="datasets/myrtales_ages&richness_table_to_check.csv", row.names = F)
+#to_check <- subset(myrtales_final, is.na(myrtales_final$n_species)) # which genera are in the tree but are not accepted by the WCVP
+#write.csv(to_check, file="myrtales_genera_to_check.csv", row.names=F)
 
+# adjustments
+myrtales_final$n_species[which(myrtales_final$genus=="Beaufortia")] <- 22
+myrtales_final$n_species[which(myrtales_final$genus=="Brachysiphon")] <- 9
+myrtales_final$n_species[which(myrtales_final$genus=="Conothamnus")] <- 3
+myrtales_final$n_species[which(myrtales_final$genus=="Endonema")] <- 2
+myrtales_final$n_species[which(myrtales_final$genus=="Pseudocaryophyllus")] <- 1
+myrtales_final$n_species[which(myrtales_final$genus=="Rupestrea")] <- 2
 
-myrtales_final <- read.csv("myrtales_ages&richness_table_to_check_post_curation.csv")
+#myrtales_final <- read.csv("myrtales_ages&richness_table_to_check_post_curation.csv")
 myrtales_final <- subset(myrtales_final, !is.na(myrtales_final$n_species))
 myrtales_final <- subset(myrtales_final, !is.na(myrtales_final$age))
 
-intersect(myrtales_final$genus,to_check$genus)
+#intersect(myrtales_final$genus,to_check$genus)
 # [1] "Beaufortia"         "Brachysiphon"       "Conothamnus"        "Endonema"           "Pseudocaryophyllus"
 # [6] "Rupestrea" - genera with species richness taken from other sources (not WCVP)
 
@@ -87,7 +94,7 @@ for(u in 1:nrow(myrtales_final)) {
   myrtales_final$div_rate_eps0.5[u] <- round(bd.ms(phy=NULL, myrtales_final$age[u], myrtales_final$n_species[u], crown=F, epsilon=0.5),3)
   myrtales_final$div_rate_eps0.9[u] <- round(bd.ms(phy=NULL, myrtales_final$age[u], myrtales_final$n_species[u], crown=F, epsilon=0.9),3)
 }
-write.csv(myrtales_final, file="myrtales_div_table_full.csv", row.names = F)
+write.csv(myrtales_final, file="datasets/myrtales_div_table_full.csv", row.names = F)
 
 
 

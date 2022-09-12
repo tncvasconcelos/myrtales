@@ -1,6 +1,6 @@
 # Regression analyses H1: individual regressions
 # rm(list=ls())
-setwd("~/Desktop/WCVP_special_issue/Eve_MyrtalesPAFTOL/myrtales")
+setwd("~/Desktop/Pubs_inprep/WCVP_special_issue/Eve_MyrtalesPAFTOL/myrtales")
 #################################################################################################
 library(phylolm)
 library(ape)
@@ -12,7 +12,7 @@ tree <- read.tree("tree/myrtales_pruned.tre")
 master_table <- readRDS("datasets/Myrtales_full_dataset.Rdata") 
 master_table_by_clade <- readRDS("datasets/Myrtales_by_clade_dataset.Rdata") 
 
-boxplot(master_table$div_rate_eps0.9~master_table$most_common_life_form)
+#boxplot(master_table$div_rate_eps0.9~master_table$most_common_life_form)
 
 ############################################
 ############################################

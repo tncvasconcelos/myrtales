@@ -1,7 +1,7 @@
 # Regression analyses 2: Dredging models
 # rm(list=ls())
 setwd("~/2022_myrtales")
-setwd("~/Desktop/WCVP_special_issue/Eve_MyrtalesPAFTOL/myrtales")
+setwd("~/Desktop/Pubs_inprep/WCVP_special_issue/Eve_MyrtalesPAFTOL/myrtales")
 
 #################################################################################################
 library(phylolm)
@@ -61,6 +61,7 @@ master_table_by_clade <- readRDS("datasets/Myrtales_by_clade_dataset.Rdata")
 master_table_by_clade[which(names(master_table_by_clade)=="Vochysiaceae")] <- NULL
 master_table_by_clade[which(names(master_table_by_clade)=="Combretaceae")] <- NULL
 
+
 for(clade_index in 1:length(master_table_by_clade)) {
 ############################################
 ############################################
@@ -93,7 +94,7 @@ master_table <- subset(master_table, !is.na(master_table$fm_scoring_corolla_diam
 # 
 
 model_div_full <- phylolm(div_rate_eps0.9~
-                            most_common_life_form+
+                            #most_common_life_form+
                             #fm_scoring_fruit+
                             seed.length.mean+
                             fm_scoring_seed_number+ 
