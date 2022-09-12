@@ -40,19 +40,15 @@ Calculates most common life form in each Myrtales genus based on the WCVP datase
 
 > 04_Niche.R 
 
-
-
-> 04.1_summarizing_Niche.R 
-
-
+Script used to calculate niche volume for each genus (by Samuel Pironon)
 
 > 05_get_habitat.R 
 
-
+Uses shapefiles from WWF to calculate the proportion of dustribution points in each Myrtales genus that falls within closed or open canopy biomes.
 
 > 06_organizing_tables_for_regression.R 
 
-Script to make phylogeny and dataset talk to each other and to visualize the states at the tips of the tree. It may need some adjustments depending on the trait. 
+Organizes traits, diversification rates, niche, habitat, and life form data in a single table for subsequent analyses.
 
 > 07.1_h1_individual_regressions.R 
 
