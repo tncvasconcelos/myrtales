@@ -32,7 +32,7 @@ Filters occurence points downloaded from GBIF following a series of criteria and
 
 > 02_div_rates.R
 
-Uses the stem age estimates and the number of species for each Myrtales genera to calculate net-diversification rates using the method-of-moments estimator from Magallon & Sanderson (2001) (link)[https://onlinelibrary.wiley.com/doi/abs/10.1111/j.0014-3820.2001.tb00826.x].
+Uses the stem age estimates and the number of species for each Myrtales genera to calculate net-diversification rates using the method-of-moments estimator from [Magallon & Sanderson (2001)](https://onlinelibrary.wiley.com/doi/abs/10.1111/j.0014-3820.2001.tb00826.x).
 
 > 03_most_common_life_form.R 
 
