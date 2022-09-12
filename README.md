@@ -24,7 +24,7 @@ Scripts:
 
 > 00_pruning_tree.R
 
-
+Organize tip labels in the Myrtales time-calibrated tree so that only one tip per genus is kept and tip labels match with those in trait dataset.
 
 > 01_cleaning_gbif.R 
 
