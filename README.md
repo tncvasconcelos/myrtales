@@ -52,7 +52,7 @@ Organizes traits, diversification rates, niche, habitat, and life form data in a
 
 > 07.1_h1_individual_regressions.R 
 
-
+Runs individual phylogenetic regression analyses (hypothesis 1)
 
 > 07.2_h2_dredging_models.R 
 
