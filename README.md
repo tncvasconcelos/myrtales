@@ -58,7 +58,7 @@ Runs individual phylogenetic regression analyses (hypothesis 1)
 
 
 
-> 07.3_phylanova_habitat.R 
+> 07.3_h3_phylanova_habitat.R 
 
 Script used to run phyloanovas and corhmm (hypothesis 3).
 
