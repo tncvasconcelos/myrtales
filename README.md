@@ -1,27 +1,25 @@
-# myrtales
-
 Codes used in: The confluence of traits and environmental factors driving diversification and niche expansion in the globally distributed order Myrtales (in prep.)
 
- 
+----
 Description of folders: 
  
 - **datasets/** 
 
 Tables with traits to be analyzed. 
 
-- **plots** 
+- **plots/** 
 
 Folder to store plots. 
 
-- **results** 
+- **results/** 
 
 Results organized in folders that correspond to the three hypotheses presented in the main manuscript (h1, h2, h3)
 
-- **tree** 
+- **tree/** 
 
 Folder to store trees.  
 
-
+----
 Scripts:
 
 > 00_pruning_tree.R
@@ -77,6 +75,7 @@ Short script to test collinearity between environmental variables used in the mu
 Script to make tree plots for Figure 1 in the main paper (Myrtales tree and trait data).
 
 
-
+----
+Distribution data used in niche analyses comes from:
 
 GBIF.org (19 March 2022) GBIF Occurrence Download https://doi.org/10.15468/dl.ba76td
