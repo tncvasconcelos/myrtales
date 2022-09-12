@@ -36,7 +36,7 @@ Uses the stem age estimates and the number of species for each Myrtales genera t
 
 > 03_most_common_life_form.R 
 
-
+Calculates most common life form in each Myrtales genus based on the WCVP dataset.
 
 > 04_Niche.R 
 
