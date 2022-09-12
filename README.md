@@ -75,6 +75,7 @@ Short script to test collinearity between environmental variables used in the mu
 Script to make tree plots for Figure 1 in the main paper (Myrtales tree and trait data).
 
 
-
+----
+Distribution data used in niche analyses comes from:
 
 GBIF.org (19 March 2022) GBIF Occurrence Download https://doi.org/10.15468/dl.ba76td
