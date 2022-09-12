@@ -1,6 +1,6 @@
 # tree plots
 # rm(list=ls())
-# setwd("~/Desktop/WCVP_special_issue/Eve_MyrtalesPAFTOL/myrtales")
+setwd("~/Desktop/Pubs_inprep/WCVP_special_issue/Eve_MyrtalesPAFTOL/myrtales")
 # setwd("2022_myrtales/")
 #################################################################################################
 library(ape)
@@ -236,3 +236,4 @@ pdf("plots/figure1lifeform.pdf", height=8, width=5)
 ai <- as.grob(i %>% insert_left(a, width = 2))
 plot(ai)
 dev.off()
+

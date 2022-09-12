@@ -1,7 +1,7 @@
 # Regression analyses 2: Dredging models
 # rm(list=ls())
 setwd("~/2022_myrtales")
-setwd("~/Desktop/WCVP_special_issue/Eve_MyrtalesPAFTOL/myrtales")
+setwd("~/Desktop/Pubs_inprep/WCVP_special_issue/Eve_MyrtalesPAFTOL/myrtales")
 
 #################################################################################################
 library(phylolm)
@@ -12,6 +12,7 @@ library(ggplot2)
 library(gridExtra)
 
 # Functions to get r squares and to organize results
+
 get.rqrs <- function(organized_table, full_dataset, phy, dep.var="div_rate_eps0.9") {
   vars <- setdiff(colnames(organized_table),c("df","logLik","AICc","delta","weight"))
   only_var <- organized_table[,vars]
@@ -39,7 +40,7 @@ organize.table <- function(table_results, thrsh=T) {
   only_var <- subset_best_fit[,vars]
   stats <- subset_best_fit[,c("df","logLik","AICc","delta","weight")]
   for(i in 1:nrow(only_var)) {
-    only_var[i,][which(!is.na(only_var[i,]))] <- "x"
+    #only_var[i,][which(!is.na(only_var[i,]))] <- "x"
     only_var[i,][which(is.na(only_var[i,]))] <- ""
   }
   tmp_df <- cbind(only_var, stats)
@@ -101,15 +102,18 @@ model_div_full <- phylolm(div_rate_eps0.9~
                             depthtobedrock2+
                             meanwatercap+
                             meancarbon+
-                            meanpH, data=master_table, phy=tree)
+                            meanpH +
+                            main_habitat
+                          , data=master_table, phy=tree)
 # model_div_full <- phylolm(div_rate_eps0.9~
 #                             most_common_life_form,
 #                           data=master_table, phy=tree)
 # plot(model_div_full)
 # Dredging full model for "best" combinations
- # dredge_div <- dredge(model_div_full)
- # save(dredge_div, file = "results/h2/dredge_div.Rsave")
-# coefTableList <- lapply(dredge_div, coefTable)
+  dredge_div <- dredge(model_div_full)
+  save(dredge_div, file = "results/h2/dredge_div.Rsave")
+
+  # coefTableList <- lapply(dredge_div, coefTable)
 # write.csv(dredge_div, file="results/h2/dredged_divrate_full.csv", row.names=F)
 #----
 # dredge_div <- read.csv("results/h2/dredged_divrate_full.csv") 
@@ -122,8 +126,11 @@ summ_mod_avg_res <- summary(mod_avg_res)
 # we treat variables as if they are always present in the model (if not in a model, it is set to 0)
 param_table <- as.data.frame(summ_mod_avg_res$coefmat.full)
 varaible_importance <- c(summ_mod_avg_res$sw)
-names(varaible_importance)[3] <- "most_common_life_formwoody"
-names(varaible_importance)[8] <- "fm_scoring_fruitFleshy"
+
+names(varaible_importance)[which(names(varaible_importance)=="most_common_life_form")] <- "most_common_life_formwoody"
+names(varaible_importance)[which(names(varaible_importance)=="fm_scoring_fruit")] <- "fm_scoring_fruitFleshy"
+names(varaible_importance)[which(names(varaible_importance)=="main_habitat")] <- "main_habitatopen"
+
 param_table$sum_of_weight <- varaible_importance[match(rownames(param_table), names(varaible_importance))]
 param_table <- param_table[,c(1,2,5,4)]
 # remove the intercept term
@@ -143,6 +150,7 @@ write.csv(param_table, file="results/h2/param_table_div.csv", row.names=T)
 param_table$names <- rownames(param_table)
 param_table$names[which(param_table$names=="CHELSA_bio10_17")] <- "Precipitation of Driest Quarter (BIO17)"
 param_table$names[which(param_table$names=="most_common_life_formwoody")] <- "Most common life form (woody)"
+param_table$names[which(param_table$names=="main_habitatopen")] <- "Main habitat (open canopy)"
 param_table$names[which(param_table$names=="CHELSA_bio10_02")] <- "Mean Diurnal Temperature Range (BIO2)"
 param_table$names[which(param_table$names=="meanpH")] <- "Mean soil pH"
 param_table$names[which(param_table$names=="depthtobedrock2")] <- "Depth to bedrock"
@@ -177,8 +185,8 @@ p1 <- ggplot(param_table, aes(y=names, x=Estimate,
 # plot(dredge_div)
 # dev.off()
 
-# dredge_div <- organize.table(dredge_div, thrsh=F)
-# dredge_div <- get.rqrs(organized_table=dredge_div, full_dataset=master_table, phy=tree, dep.var="div_rate_eps0.9")
+dredge_div <- organize.table(dredge_div, thrsh=F)
+dredge_div <- get.rqrs(organized_table=dredge_div, full_dataset=master_table, phy=tree, dep.var="div_rate_eps0.9")
 # write.csv(dredge_div, file="results/h2/dredged_divrate_organized_table.csv")
 # dredge_div[order(dredge_div$rsqs,decreasing = T),]
 
@@ -199,7 +207,8 @@ model_vol_full <- phylolm(niche_through_time~
                             depthtobedrock2+
                             meanwatercap+
                             meancarbon+
-                            meanpH
+                            meanpH+
+                            main_habitat
                           , data=master_table, phy=tree)
 
 # Dredging full model for "best" combinations
@@ -223,6 +232,8 @@ param_table <- as.data.frame(summ_mod_avg_res$coefmat.full)
 varaible_importance <- c(summ_mod_avg_res$sw)
 names(varaible_importance)[names(varaible_importance)=="most_common_life_form"] <- "most_common_life_formwoody"
 names(varaible_importance)[names(varaible_importance)=="fm_scoring_fruit"] <- "fm_scoring_fruitFleshy"
+names(varaible_importance)[which(names(varaible_importance)=="main_habitat")] <- "main_habitatopen"
+
 param_table$sum_of_weight <- varaible_importance[match(rownames(param_table), names(varaible_importance))]
 param_table <- param_table[,c(1,2,5,4)]
 # remove the intercept term

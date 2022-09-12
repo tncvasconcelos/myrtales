@@ -1,6 +1,6 @@
 # Regression analyses 2: Dredging models
 # rm(list=ls())
-setwd("~/Desktop/WCVP_special_issue/Eve_MyrtalesPAFTOL/myrtales")
+setwd("~/Desktop/Pubs_inprep/WCVP_special_issue/Eve_MyrtalesPAFTOL/myrtales")
 #setwd("~/2022_myrtales/")
 #################################################################################################
 library(phylolm)
@@ -333,7 +333,7 @@ corhmm_tbl <- corHMM:::getModelTable(corhmm_fits)
 # conducting a lrt
 teststat <- -2 * (corhmm_tbl$lnLik[1] - corhmm_tbl$lnLik[2])
 p.val40 <- pchisq(teststat, df = 1, lower.tail = FALSE)
-print(p.val)
+print(p.val40)
 
 # 60% cutoff
 test4 <- subset_master_table[c("fm_scoring_fruit","cutoff_60")]

@@ -22,7 +22,7 @@ div_model_var_to_keep <- c("most_common_life_form","fm_scoring_fruit","seed.leng
                            "Vol", "CHELSA_bio10_01","CHELSA_bio10_02","CHELSA_bio10_10",
                            "CHELSA_bio10_11","CHELSA_bio10_12","CHELSA_bio10_15","CHELSA_bio10_16",
                            "CHELSA_bio10_17","GLOBAL_SLOPE_10MIN","depthtobedrock2", "meancarbon",
-                           "meanpH","meanwatercap")
+                           "meanpH","meanwatercap","main_habitat")
 
 # Running individual models
 subset_master_table <- master_table
@@ -44,6 +44,8 @@ for(var_index_div in 1:length(div_model_var_to_keep)) {
     #pruned_tree <- keep.tip(tree, rownames(subset_master_table))
     #x <- phylANOVA(pruned_tree, lifeform, div)
     #boxplot(subset_master_table$div_rate_eps0.9~subset_master_table$most_common_life_form)
+    
+    #summary(model_div_full)
     
     var <- div_model_var_to_keep[var_index_div]
     r.sq <- round(model_div_full$r.squared,3)
@@ -76,7 +78,7 @@ for(var_index_div in 1:length(div_model_var_to_keep)) {
 }
 
 colnames(results_div) <- c("group","n_points","d_var","predictor","r.sqr","p","slope")
-write.csv(results_div, file="results/h1/Myrtales_results_div.csv", row.names=F)
+write.csv(results_div, file="results/h1/Myrtales_results_div.csv0", row.names=F)
 
 
 
