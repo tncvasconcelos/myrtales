@@ -1,3 +1,12 @@
+#-------------------------------------------------
+# rm(list=ls())
+# Set wd as the repo
+# setwd("~/Desktop/Pubs_inprep/WCVP_special_issue/Eve_MyrtalesPAFTOL/myrtales/")
+
+# Load packages
+library(ape)
+library(phytools)
+library(picante)
 
 tidyng.Myrtales.tree <- function(tree, tips_to_drop) {
   # Remove tips from "tips to drop" file
@@ -33,30 +42,16 @@ tidyng.Myrtales.tree <- function(tree, tips_to_drop) {
   return(tree_pruned)
 }
 
-
-#-------------------------------------------------
-#-------------------------------------------------
-#-------------------------------------------------
-# Set wd as the repo
-setwd("~/Desktop/Pubs_inprep/WCVP_special_issue/Eve_MyrtalesPAFTOL/myrtales/")
-# rm(list=ls())
-
-# Load packages
-library(ape)
-library(phytools)
-library(picante)
-
 # Load tree
 tree <- read.nexus("./tree/Myrtales_dated_Aug2022.tre")
 tree <- ladderize(tree)
-tips_to_drop_table <- read.csv("./tree/tips_to_drop_final.csv", h=T)
+tips_to_drop_table <- read.csv("./tree/tips_to_drop_final.csv", h=T) # loading tips to drop from the tree
 tips_to_drop <- as.character(tips_to_drop_table[tips_to_drop_table$to_drop=="x",][,"tip"])
 tree_pruned <- tidyng.Myrtales.tree(tree, tips_to_drop)
 
-# fixing typos
+# fixing typos 
 tree_pruned$tip.label[which(tree_pruned$tip.label=="Myrtaceae_Astereomyrtus")] <- "Myrtaceae_Asteromyrtus"
 tree_pruned$tip.label[which(tree_pruned$tip.label=="Melastomataceae_Potheranthera")] <- "Melastomataceae_Poteranthera"
-
 #
 write.tree(tree_pruned, file="./tree/myrtales_pruned.tre")
 

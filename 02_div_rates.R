@@ -18,7 +18,7 @@ get.node.age <- function (phy) {
   }
   ages <- abs(round(res,3)-round(max(res),3))
   return(ages)
-} # fun?ao pra pegar os node ages
+} 
 
 # Getting a table with genera age from dated phylogeny
 myrtales_tree <- read.tree("tree/myrtales_pruned.tre")

@@ -1,6 +1,5 @@
 # cleaning Myrtales points
 # rm(list=ls())
-
 library(data.table)
 library(maptools)
 library(raster)
@@ -12,7 +11,7 @@ data("wrld_simpl")
 #-----------------------------
 # If local
 # setwd("~/Desktop/WCVP_special_issue/Eve_MyrtalesPAFTOL/myrtales")
-source("/Users/thaisvasconcelos/Desktop/WCVP_special_issue/WCVPtools/WCVPtools_functions.R")
+source("/Users/thaisvasconcelos/Desktop/Pubs_inprep/WCVP_special_issue/WCVPtools/WCVPtools_functions.R")
 dist_sample <- read.table("../../wcvp_names_and_distribution_special_edition_2022/wcvp_distribution.txt", sep="|", header=TRUE, quote = "", fill=TRUE, encoding = "UTF-8")
 names_sample <- read.table("../../wcvp_names_and_distribution_special_edition_2022/wcvp_names.txt", sep="|", header=TRUE, quote = "", fill=TRUE, encoding = "UTF-8")
 #-----------------------------

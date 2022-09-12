@@ -1,8 +1,6 @@
 #-------------------------------------------------
-#-------------------------------------------------
-#-------------------------------------------------
 # Set wd as the repo
-setwd("~/Desktop/WCVP_special_issue/Eve_MyrtalesPAFTOL/myrtales/")
+setwd("~/Desktop/Pubs_inprep/WCVP_special_issue/Eve_MyrtalesPAFTOL/myrtales/")
 
 #----------------
 # (1) Filter Myrtales from the WCVP
@@ -35,7 +33,6 @@ for(i in 1:length(all_genera)) {
       for(life_form_index in 1:length(all_life_forms)){
          lumped_life_forms[life_form_index] <- scoring$humphreys_lifeform[scoring$lifeform_description==all_life_forms[life_form_index]]
       }
-      
       life_forms[i,3] <- names(sort(table(lumped_life_forms), decreasing=T))[1]
    }
    life_forms[i,1] <- one_family
