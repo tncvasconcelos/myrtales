@@ -292,8 +292,8 @@ t0 <- ggplot(dataset_traits, aes(x=fm_scoring_fruit, fill=main_habitat)) +
         axis.title.x = element_text(colour = 'black', size = 10)) 
 
 
-# corhmm_fits <- corHMM:::fitCorrelationTest(tree_pruned, dataset_traits) 
-# save(corhmm_fits, file = "results/h3/corhmm_fits.Rsave")
+corhmm_fits <- corHMM:::fitCorrelationTest(tree_pruned, dataset_traits) 
+save(corhmm_fits, file = "results/h3/corhmm_fits.Rsave")
 load("results/h3/corhmm_fits.Rsave")
 corhmm_tbl <- corHMM:::getModelTable(corhmm_fits)
 

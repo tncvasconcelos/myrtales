@@ -18,10 +18,11 @@ tree <- read.tree("tree/myrtales_pruned.tre")
 data <- readRDS("datasets/Myrtales_full_dataset.Rdata")
 tree <- keep.tip(tree, tree$tip.label[tree$tip.label %in% rownames(data)])
 data <- data[match(tree$tip.label, rownames(data)),]
+
 #tree$tip.label <- gsub("^[^_]*_","", tree$tip.label)
 # plot(tree)
 # axisPhylo()
-master_table <- readRDS("datasets/Myrtales_full_dataset.Rdata") 
+#master_table <- readRDS("datasets/Myrtales_full_dataset.Rdata") 
 
 
 # #pdf("mu_plot.pdf", width=4, height=5)
@@ -107,16 +108,19 @@ to_rename <- unique(family_names)[!unique(family_names) %in% names(pal)]
 family_colors <- viridis::viridis(length(unique(family_names)))
 names(family_colors) <- unique(family_names)
 
-tip_names <- tree$tip.label
-tip_names <- gsub("_",") ", tip_names)
-tip_names <- paste0("(",tip_names)
-tree$tip.label <- tip_names
+#tip_names <- tree$tip.label
+#tip_names <- gsub("_",") ", tip_names)
+#tip_names <- paste0("(",tip_names)
+#tree$tip.label <- tip_names
+
+tree$tip.label <- gsub(".*_", "",tree$tip.label)
+
 
 a <- ggtree(tree) +
   geom_tiplab(geom="text", size=0.3) +
   ggtitle("a) Myrtales Phylogeny")
 
-plot_data <- data.frame(id = tree$tip.label, div_rate = data$div_rate_eps0.9, niche_expansion = exp(data$niche_through_time),most_common_life_form=data$most_common_life_form, fruit_type=data$fm_scoring_fruit, seed_length=exp(data$seed.length.mean), seed_number=exp(data$fm_scoring_seed_number), corolla_diam=exp(data$fm_scoring_corolla_diam), niche=exp(data$Vol), clade = family_names)
+plot_data <- data.frame(id = tree$tip.label, div_rate = data$div_rate_eps0.9, niche_expansion = exp(data$niche_through_time),most_common_life_form=data$most_common_life_form, fruit_type=data$fm_scoring_fruit, seed_length=exp(data$seed.length.mean), seed_number=exp(data$fm_scoring_seed_number), corolla_diam=exp(data$fm_scoring_corolla_diam), niche=exp(data$Vol), main_habitat=data$main_habitat, clade = family_names)
 
 plot_data$clade[plot_data$clade %in% to_rename] <- "Melastomataceae_CAPclade"
 plot_data$clade <- as.character(plot_data$clade)
@@ -195,6 +199,14 @@ i <- ggplot(plot_data, aes(x = id, y = 1, fill = factor(most_common_life_form),c
   ggtitle("i) Life form") +
   theme(legend.position='none')
 
+j <- ggplot(plot_data, aes(x = id, y = 1, fill = factor(main_habitat),color = main_habitat)) + 
+  geom_point(aes(shape = main_habitat, color = clade, stroke=0.001), size = 0.8) + 
+  scale_shape_manual(values = c(15, 0)) + 
+  scale_color_manual(values = cols) +
+  coord_flip() + 
+  theme_tree2() + 
+  ggtitle("j) Habitat") +
+  theme(legend.position='none')
 
 # PLOTS
 pdf("plots/figure1div.pdf", height=8, width=5)
@@ -235,5 +247,10 @@ dev.off()
 pdf("plots/figure1lifeform.pdf", height=8, width=5)
 ai <- as.grob(i %>% insert_left(a, width = 2))
 plot(ai)
+dev.off()
+
+pdf("plots/figure1habitat.pdf", height=8, width=5)
+aj <- as.grob(j %>% insert_left(a, width = 2))
+plot(aj)
 dev.off()
 

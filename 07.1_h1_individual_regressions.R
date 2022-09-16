@@ -31,6 +31,11 @@ for(var_index_div in 1:length(div_model_var_to_keep)) {
   one_var_subset <- subset_master_table[,c("genus","Family","div_rate_eps0.9",div_model_var_to_keep[var_index_div])]
   colnames(one_var_subset)[4] <- "var_to_test"
   fail <- F
+  
+  # excluding 0 div rates from monotypic genera (cant be logged)
+  one_var_subset <- subset(one_var_subset, one_var_subset$div_rate_eps0.9!=0)
+  one_var_subset$div_rate_eps0.9 <- log(one_var_subset$div_rate_eps0.9)
+  
   tryCatch(model_div_full <- phylolm(div_rate_eps0.9~ var_to_test, data=one_var_subset, phy=tree), error = function(e) { fail <<- TRUE})
   if(fail) {
     var <- div_model_var_to_keep[var_index_div]
@@ -78,7 +83,7 @@ for(var_index_div in 1:length(div_model_var_to_keep)) {
 }
 
 colnames(results_div) <- c("group","n_points","d_var","predictor","r.sqr","p","slope")
-write.csv(results_div, file="results/h1/Myrtales_results_div.csv0", row.names=F)
+write.csv(results_div, file="results/h1/Myrtales_results_div.csv", row.names=F)
 
 
 
@@ -93,6 +98,11 @@ for(i in 1:length(master_table_by_clade)) {
   results_div <- matrix(nrow=0, ncol=7)
   for(var_index_div in 1:length(div_model_var_to_keep)) {
     one_var_subset <- subset_master_table[,c("genus","Family","div_rate_eps0.9",div_model_var_to_keep[var_index_div])]
+    
+    # excluding 0 div rates from monotypic genera (cant be logged)
+    one_var_subset <- subset(one_var_subset, one_var_subset$div_rate_eps0.9!=0)
+    one_var_subset$div_rate_eps0.9 <- log(one_var_subset$div_rate_eps0.9)
+    
     colnames(one_var_subset)[4] <- "var_to_test"
     fail <- F
     tryCatch(model_div_full <- phylolm(div_rate_eps0.9~ var_to_test, data=one_var_subset, phy=tree), error = function(e) { fail <<- TRUE})
@@ -137,3 +147,55 @@ for(i in 1:length(master_table_by_clade)) {
 
 full_results_div <- do.call(rbind, full_results_div)
 write.csv(full_results_div, file="results/h1/clade_specifc_results_div.csv", row.names=F)
+
+
+### Plot Figure 2:
+
+#####################################
+# Clade specific
+pal <- hcl.colors(6, palette = "Viridis", alpha = 0.7)
+names(pal) <- names(master_table_by_clade)
+
+pdf("plots/figure2_clade_specific_div.rates-niche.pdf", height=6, width=5)
+par(mar=c(3,2,1,0.5))
+par(lwd=.3)
+par(mfrow=c(3,2))
+for(i in 1:length(master_table_by_clade)) {
+  one_subset <- master_table_by_clade[[i]]
+  one_clade <- names(master_table_by_clade)[i]
+  
+  subset_master_table <- one_subset[,c("Vol","age","div_rate_eps0.9","niche_through_time")]
+  
+  # excluding 0 div rates from monotypic genera (cant be logged)
+  subset_master_table <- subset(subset_master_table, subset_master_table$div_rate_eps0.9!=0)
+  subset_master_table$div_rate_eps0.9 <- log(subset_master_table$div_rate_eps0.9)
+  
+  subset_master_table <- subset(subset_master_table, !is.na(subset_master_table$niche_through_time))
+  subset_master_table <- subset(subset_master_table, subset_master_table$niche_through_time!=0) 
+  ###
+
+  model_tmp2 <- phylolm(div_rate_eps0.9~niche_through_time, data=subset_master_table, phy=tree)
+  r.sq <- model_tmp2$r.squared
+  p <- unname(summary(model_tmp2)$coefficients[,4][2])
+
+  
+  # Plots:
+  plot(subset_master_table$div_rate_eps0.9~subset_master_table$niche_through_time, bty="n", pch=21, bg=pal[one_clade], xaxt="n", yaxt="n",xlab="", ylab="", ylim=c(-10,2), xlim=c(-10,5),  cex=1, lwd=0.5)
+  
+  # adding axes
+  par(lwd=.6)
+  axis(side=1, tick = TRUE, line = 0, lwd = .4, cex.axis=.6, tcl=NA, mgp=c(0,0.1,0),las=1, cex.lab=.4)
+  axis(side=2, tick = TRUE, line = 0, lwd = .4, cex.axis=.6, tcl=NA, mgp=c(2.5,0.2,0),las=1)
+  
+  mtext(text="(log) niche expansion", side=1, line=1, cex=.5)
+  par(las=0)
+  mtext(text="(log) net-diversification rates", side=2, line=1.5, cex=.5)
+  par(lwd=.5)
+  #abline(a=, b= model1)
+  abline(model_tmp2)
+  legend(legend = c(paste0("p=",round(p,3)), paste0("r^2=",round(r.sq,3))), x=-10, y=2, bty="n", cex = .7, pt.cex=1.25)
+  title(main=one_clade)
+  ####
+ 
+}
+dev.off()

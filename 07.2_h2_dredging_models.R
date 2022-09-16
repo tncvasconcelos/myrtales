@@ -14,7 +14,7 @@ library(gridExtra)
 # Functions to get r squares and to organize results
 
 get.rqrs <- function(organized_table, full_dataset, phy, dep.var="div_rate_eps0.9") {
-  vars <- setdiff(colnames(organized_table),c("df","logLik","AICc","delta","weight"))
+  vars <- setdiff(colnames(organized_table),c("(Intercept)","df","logLik","AICc","delta","weight"))
   only_var <- organized_table[,vars]
   colnames(full_dataset)[which(colnames(full_dataset)==dep.var)] <- "focal_var"
   rqsrs <- c()
@@ -42,6 +42,8 @@ organize.table <- function(table_results, thrsh=T) {
   for(i in 1:nrow(only_var)) {
     #only_var[i,][which(!is.na(only_var[i,]))] <- "x"
     only_var[i,][which(is.na(only_var[i,]))] <- ""
+    
+    cat(i,"\r")
   }
   tmp_df <- cbind(only_var, stats)
   tmp_df$logLik <- round(tmp_df$logLik, 1)
@@ -49,7 +51,6 @@ organize.table <- function(table_results, thrsh=T) {
   tmp_df$delta <- round(tmp_df$delta, 2)
   tmp_df$weight <- round(tmp_df$weight, 2)
   rownames(tmp_df) <- paste0("model ", 1:nrow(tmp_df))
-  cat(i,"\r")
   return(tmp_df)
 }
 
@@ -67,11 +68,17 @@ master_table <- readRDS("datasets/Myrtales_full_dataset.Rdata")
 # Building global model for diversification (div rates as dependent variable)
 # here note that we're keeping only CHELSA_bio10_17 and CHELSA_bio10_11 for 
 # precipitation and temperature
+
 master_table <- subset(master_table, !is.na(master_table$most_common_life_form))
 master_table <- subset(master_table, !is.na(master_table$fm_scoring_fruit))
 master_table <- subset(master_table, !is.na(master_table$seed.length.mean))
 master_table <- subset(master_table, !is.na(master_table$fm_scoring_seed_number))
 master_table <- subset(master_table, !is.na(master_table$fm_scoring_corolla_diam))
+
+
+# excluding 0 div rates from monotypic genera (cant be logged)
+master_table <- subset(master_table, master_table$div_rate_eps0.9!=0)
+master_table$div_rate_eps0.9 <- log(master_table$div_rate_eps0.9)
 
 # model_div_full <- phylolm(scale(div_rate_eps0.9)~
 #                             scale(most_common_life_form)+
@@ -105,18 +112,14 @@ model_div_full <- phylolm(div_rate_eps0.9~
                             meanpH +
                             main_habitat
                           , data=master_table, phy=tree)
-# model_div_full <- phylolm(div_rate_eps0.9~
-#                             most_common_life_form,
-#                           data=master_table, phy=tree)
-# plot(model_div_full)
+
+
 # Dredging full model for "best" combinations
   dredge_div <- dredge(model_div_full)
   save(dredge_div, file = "results/h2/dredge_div.Rsave")
 
-  # coefTableList <- lapply(dredge_div, coefTable)
-# write.csv(dredge_div, file="results/h2/dredged_divrate_full.csv", row.names=F)
+
 #----
-# dredge_div <- read.csv("results/h2/dredged_divrate_full.csv") 
 
 load("results/h2/dredge_div.Rsave")
 # only models with a deltaAIC below 4 are included
@@ -180,14 +183,13 @@ p1 <- ggplot(param_table, aes(y=names, x=Estimate,
 # model.avg(dredge_div, subset = cumsum(weight) <= .95) # get averaged coefficients
 # summary(get.models(dredge_div, 1)[[1]])
 
-
 # pdf(file = "h2-results.pdf", height = 20, width = 20)
 # plot(dredge_div)
 # dev.off()
 
-dredge_div <- organize.table(dredge_div, thrsh=F)
+#dredge_div <- organize.table(dredge_div, thrsh=F)
 dredge_div <- get.rqrs(organized_table=dredge_div, full_dataset=master_table, phy=tree, dep.var="div_rate_eps0.9")
-# write.csv(dredge_div, file="results/h2/dredged_divrate_organized_table.csv")
+write.csv(dredge_div, file="results/h2/dredged_divrate_rsqr.csv")
 # dredge_div[order(dredge_div$rsqs,decreasing = T),]
 
 
@@ -254,6 +256,7 @@ write.csv(param_table, file="results/h2/param_table_vol.csv", row.names=T)
 param_table$names <- rownames(param_table)
 param_table$names[which(param_table$names=="CHELSA_bio10_17")] <- "Precipitation of Driest Quarter (BIO17)"
 param_table$names[which(param_table$names=="most_common_life_formwoody")] <- "Most common life form (woody)"
+param_table$names[which(param_table$names=="main_habitatopen")] <- "Main habitat (open canopy)"
 param_table$names[which(param_table$names=="CHELSA_bio10_02")] <- "Mean Diurnal Temperature Range (BIO2)"
 param_table$names[which(param_table$names=="meanpH")] <- "Mean soil pH"
 param_table$names[which(param_table$names=="depthtobedrock2")] <- "Depth to bedrock"
@@ -265,7 +268,7 @@ param_table$names[which(param_table$names=="fm_scoring_seed_number")] <- "Seed n
 param_table$names[which(param_table$names=="seed.length.mean")] <- "Seed length"
 param_table$names[which(param_table$names=="CHELSA_bio10_11")] <- "Mean Temperature of Coldest Quarter (BIO11)"
 param_table$names[which(param_table$names=="fm_scoring_corolla_diam")] <- "Flower diameter"
-param_table$color_code <- NA
+param_table$color_code <- NA 
 param_table$color_code[which(param_table$sum_of_weight>=0.9)] <- "red" #"#d1495b"
 #param_table$color_code[which(param_table$sum_of_weight<0.9)] <- #"#8d96a3"
   
@@ -278,6 +281,9 @@ p2 <- ggplot(param_table, aes(y=names, x=Estimate,
   xlab("Estimate") +
   ylab("") +
   theme(legend.position = "none")
+
+dredge_vol <- get.rqrs(organized_table=dredge_vol, full_dataset=master_table, phy=tree, dep.var="niche_through_time")
+write.csv(dredge_div, file="results/h2/dredged_vol_rsqr.csv")
 
 pdf("plots/figure3_globalmodels.pdf" ,height=3.5,width=10)
 grid.arrange(p1, p2, ncol=2, nrow = 1)

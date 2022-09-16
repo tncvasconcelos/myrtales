@@ -1,15 +1,15 @@
-"","Estimate","Std. Error","sum_of_weight","Pr(>|z|)","names"
-"GLOBAL_SLOPE_10MIN",-0.001,0.106,0.111,0.993,"GLOBAL_SLOPE_10MIN"
-"fm_scoring_corolla_diam",0.005,0.08,0.126,0.952,"fm_scoring_corolla_diam"
-"main_habitatopen",-0.024,0.189,0.128,0.9,"main_habitatopen"
-"meanwatercap",0.228,1.223,0.141,0.852,"meanwatercap"
-"depthtobedrock2",0.312,1.194,0.185,0.794,"depthtobedrock2"
-"seed.length.mean",0.154,0.252,0.433,0.54,"seed.length.mean"
-"most_common_life_formwoody",0.472,0.454,0.687,0.299,"most_common_life_formwoody"
-"fm_scoring_seed_number",0.203,0.19,0.703,0.285,"fm_scoring_seed_number"
-"CHELSA_bio10_11",28.426,13.358,0.967,0.033,"CHELSA_bio10_11"
-"fm_scoring_fruitFleshy",1.644,0.664,1,0.013,"fm_scoring_fruitFleshy"
-"meancarbon",1.623,0.53,1,0.002,"meancarbon"
-"CHELSA_bio10_02",3.742,0.927,1,0,"CHELSA_bio10_02"
-"meanpH",13.912,3.422,1,0,"meanpH"
-"CHELSA_bio10_17",1.361,0.273,1,0,"Precipitation of Driest Quarter (BIO17)"
+"","Estimate","Std. Error","sum_of_weight","Pr(>|z|)"
+"main_habitatopen",-0.005,0.153,0.097,0.972
+"GLOBAL_SLOPE_10MIN",-0.008,0.123,0.113,0.947
+"meanwatercap",-0.085,1.025,0.118,0.934
+"depthtobedrock2",0.125,0.938,0.121,0.894
+"fm_scoring_corolla_diam",-0.018,0.096,0.135,0.852
+"CHELSA_bio10_11",3.183,8.67,0.235,0.714
+"seed.length.mean",0.092,0.199,0.314,0.645
+"meancarbon",0.635,0.602,0.706,0.291
+"meanpH",4.668,3.99,0.755,0.242
+"most_common_life_formwoody",0.592,0.43,0.829,0.168
+"fm_scoring_fruitFleshy",1.28,0.665,0.954,0.054
+"fm_scoring_seed_number",0.374,0.166,0.983,0.024
+"CHELSA_bio10_17",1.103,0.286,1,0
+"CHELSA_bio10_02",3.628,0.936,1,0

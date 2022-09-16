@@ -89,6 +89,8 @@ combined_table$fm_scoring_corolla_diam <- log(combined_table$fm_scoring_corolla_
 
 # SAVE
 saveRDS(combined_table, file="datasets/Myrtales_full_dataset.Rdata")
+# for sup mat:
+write.csv(combined_table, file="Myrtales_full_dataset.csv")
 
 # clade specifics:
 myrtaceae_table <- subset(combined_table, combined_table$Family=="Myrtaceae")
