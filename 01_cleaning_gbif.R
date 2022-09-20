@@ -331,7 +331,7 @@ all_vars <- subset(all_vars, all_vars$family %in% myrtales_families)
 # reference table for taxized names
 #-----------------------------
 # If local
-reference_table <- list.files("/Users/thaisvasconcelos/Desktop/WCVP_special_issue/WCVPtools/taxized_reference_tables", full.names = T)
+reference_table <- list.files("taxized_reference_tables", full.names = T)
 reference_table <- do.call(rbind, lapply(reference_table, read.csv))
 
 
