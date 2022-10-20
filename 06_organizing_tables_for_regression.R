@@ -1,20 +1,28 @@
 # rm(list=ls())
-setwd("~/Desktop/Pubs_inprep/WCVP_special_issue/Eve_MyrtalesPAFTOL/myrtales")
+     
 #################################################################################################
 #---------------------------
 library(ape)
 library(phytools)
 
 # Traits
-master_table <- read.csv("datasets/2022-09-12_Myrtales-master-table.csv") 
+setwd("~/Desktop/Pubs_inprep/WCVP_special_issue/Eve_MyrtalesPAFTOL/myrtales")
 
-#colnames(master_table)
-cols_to_keep <- c("X","Family","Genus","most_common_life_form","fm_scoring_fruit","seed.min","seed.max",
-                  "fm_scoring_seed_number","seed.length.min","seed.length.max","seed.width.min",
-                  "seed.width.max","fm_scoring_pollination1","fm_scoring_pollination2","fm_scoring_corolla_diam")
+master_table <- read.csv("Supplementary Table 2/2022-25-04_Myrtales-master-tabl-Table 1.csv") 
+master_table <- subset(master_table, master_table$Family_Genus!="")
+
+# here we keep only columns that will be used in the analyses
+cols_to_keep <- c("Family_Genus","Family","Genus",
+                  "Most.Common.Life.Form","Dry.or.Fleshy.Fruit","Mean.Seed.Number.per.Fruit",
+                  "Mean.Seed.Length","Mean.Corolla.Diameter")
 
 master_table <- master_table[,cols_to_keep]
 colnames(master_table)[which(colnames(master_table)=="Genus")] <- "genus"
+
+# fixing typos
+master_table$Family_Genus[grep("Myrtaceae_Astereomyrtus", master_table$Family_Genus)] <- "Myrtaceae_Asteromyrtus"
+master_table$Family_Genus[grep("Melastomataceae_Potheranthera", master_table$Family_Genus)] <- "Melastomataceae_Poteranthera"
+master_table$genus[grep("Potheranthera", master_table$genus)] <- "Poteranthera"
 
 # Niche
 summary_niches <- read.csv("datasets/myrtales_niche_summaries.csv")
@@ -33,23 +41,23 @@ combined_table <- merge(master_table, summary_niches, by="genus")
 combined_table <- merge(combined_table, habitat, by="genus")
 combined_table <- merge(combined_table, div_rates, by="genus")
 
-row.names(combined_table) <- combined_table$X
-combined_table <- combined_table[,-2]
+row.names(combined_table) <- combined_table$Family_Genus
+#combined_table <- combined_table[,-2]
 
-# Adding mean seed length from min and max values
-combined_table$seed.length.mean <- NA
-# Getting a mean value for seed length
-for(i in 1:nrow(combined_table)) {
-  seed_min <- combined_table$seed.length.min[i]
-  seed_max <- combined_table$seed.length.max[i]
-  combined_table$seed.length.mean[i] <- mean(c(seed_min, seed_max))
-}
+# # Adding mean seed length from min and max values
+# combined_table$seed.length.mean <- NA
+# # Getting a mean value for seed length
+# for(i in 1:nrow(combined_table)) {
+#   seed_min <- combined_table$seed.length.min[i]
+#   seed_max <- combined_table$seed.length.max[i]
+#   combined_table$seed.length.mean[i] <- mean(c(seed_min, seed_max))
+# }
 
 # Lumping life forms
-combined_table$most_common_life_form[which(combined_table$most_common_life_form=="annual")] <- "herbaceous"
-combined_table$most_common_life_form[which(combined_table$most_common_life_form=="woody perennial")] <- "woody"
-combined_table$most_common_life_form[which(combined_table$most_common_life_form=="herbaceous perennial")] <- "herbaceous"
-combined_table$most_common_life_form[which(combined_table$most_common_life_form=="epiphyte")] <- "herbaceous"
+combined_table$Most.Common.Life.Form[which(combined_table$Most.Common.Life.Form=="annual")] <- "herbaceous"
+combined_table$Most.Common.Life.Form[which(combined_table$Most.Common.Life.Form=="woody perennial")] <- "woody"
+combined_table$Most.Common.Life.Form[which(combined_table$Most.Common.Life.Form=="herbaceous perennial")] <- "herbaceous"
+combined_table$Most.Common.Life.Form[which(combined_table$Most.Common.Life.Form=="epiphyte")] <- "herbaceous"
 
 # Removing 0s
 # combined_table <- subset(combined_table, combined_table$div_rate_eps0.9!=0)
@@ -83,9 +91,10 @@ combined_table$meanpH <- log(combined_table$meanpH)
 combined_table$meanwatercap <- log(combined_table$meanwatercap)
 
 # traits:
-combined_table$fm_scoring_seed_number <- log(combined_table$fm_scoring_seed_number)
-combined_table$seed.length.mean <- log(combined_table$seed.length.mean)
-combined_table$fm_scoring_corolla_diam <- log(combined_table$fm_scoring_corolla_diam)
+
+combined_table$Mean.Seed.Number.per.Fruit <- log(combined_table$Mean.Seed.Number.per.Fruit)
+combined_table$Mean.Seed.Length <- log(combined_table$Mean.Seed.Length)
+combined_table$Mean.Corolla.Diameter <- log(combined_table$Mean.Corolla.Diameter)
 
 # SAVE
 saveRDS(combined_table, file="datasets/Myrtales_full_dataset.Rdata")

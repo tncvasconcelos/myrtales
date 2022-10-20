@@ -16,6 +16,7 @@ require(cowplot)
 # Tree
 tree <- read.tree("tree/myrtales_pruned.tre")
 data <- readRDS("datasets/Myrtales_full_dataset.Rdata")
+
 tree <- keep.tip(tree, tree$tip.label[tree$tip.label %in% rownames(data)])
 data <- data[match(tree$tip.label, rownames(data)),]
 
@@ -120,7 +121,8 @@ a <- ggtree(tree) +
   geom_tiplab(geom="text", size=0.3) +
   ggtitle("a) Myrtales Phylogeny")
 
-plot_data <- data.frame(id = tree$tip.label, div_rate = data$div_rate_eps0.9, niche_expansion = exp(data$niche_through_time),most_common_life_form=data$most_common_life_form, fruit_type=data$fm_scoring_fruit, seed_length=exp(data$seed.length.mean), seed_number=exp(data$fm_scoring_seed_number), corolla_diam=exp(data$fm_scoring_corolla_diam), niche=exp(data$Vol), main_habitat=data$main_habitat, clade = family_names)
+
+plot_data <- data.frame(id = tree$tip.label, div_rate = data$div_rate_eps0.9, niche_expansion = exp(data$niche_through_time),most_common_life_form=data$Most.Common.Life.Form, fruit_type=data$Dry.or.Fleshy.Fruit, seed_length=exp(data$Mean.Seed.Length), seed_number=exp(data$Mean.Seed.Number.per.Fruit), corolla_diam=exp(data$Mean.Corolla.Diameter), niche=exp(data$Vol), main_habitat=data$main_habitat, clade = family_names)
 
 plot_data$clade[plot_data$clade %in% to_rename] <- "Melastomataceae_CAPclade"
 plot_data$clade <- as.character(plot_data$clade)

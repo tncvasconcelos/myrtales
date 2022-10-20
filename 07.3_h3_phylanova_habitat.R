@@ -21,22 +21,24 @@ master_table <- readRDS("datasets/Myrtales_full_dataset.Rdata")
 # Hypothesis 3: 
 # The occupation of habitats depend on intrinsic traits related on both survival and reproduction. For example, wind pollinated species and/or those with larger, more conspicuous flowers are more species-rich in open habitats. Species with fleshy fruits and/or species with fruits with larger, fewer seeds are more species-rich in closed habitats. 
 #plot(sort(subset_master_table$open_canopy))
+
 subset_master_table <- master_table
 
+colnames(subset_master_table)
 ###############################
 ### Habitat vs. corolla diameter
-test1 <- subset_master_table[c("fm_scoring_corolla_diam","main_habitat")]
-test1 <- subset(test1, !is.na(test1$fm_scoring_corolla_diam))
+test1 <- subset_master_table[c("Mean.Corolla.Diameter","main_habitat")]
+test1 <- subset(test1, !is.na(test1$Mean.Corolla.Diameter))
 test1 <- subset(test1, !is.na(test1$main_habitat))
 
-corolla_diam <- test1$fm_scoring_corolla_diam
+corolla_diam <- test1$Mean.Corolla.Diameter
 habitat <- test1$main_habitat
 names(corolla_diam) <- names(habitat) <- rownames(test1)
 
 tree_pruned <- keep.tip(tree, rownames(test1))
 phylanova_results <- phylANOVA(tree_pruned, habitat, corolla_diam)
 
-plot_corolla50 <- ggplot(test1, aes(x=main_habitat, y=exp(fm_scoring_corolla_diam), fill=main_habitat)) + 
+plot_corolla50 <- ggplot(test1, aes(x=main_habitat, y=exp(Mean.Corolla.Diameter), fill=main_habitat)) + 
   geom_boxplot(lwd=0.3, outlier.size=0.25, alpha=0.8) + 
   scale_fill_manual( values = c("#66a182","#edae49")) +
   theme_bw(base_size = 8) + 
@@ -50,18 +52,18 @@ plot_corolla50 <- ggplot(test1, aes(x=main_habitat, y=exp(fm_scoring_corolla_dia
 
 
 # 40% cutoff
-test1 <- subset_master_table[c("fm_scoring_corolla_diam","cutoff_40")]
-test1 <- subset(test1, !is.na(test1$fm_scoring_corolla_diam))
+test1 <- subset_master_table[c("Mean.Corolla.Diameter","cutoff_40")]
+test1 <- subset(test1, !is.na(test1$Mean.Corolla.Diameter))
 test1 <- subset(test1, !is.na(test1$cutoff_40))
 
-corolla_diam <- test1$fm_scoring_corolla_diam
+corolla_diam <- test1$Mean.Corolla.Diameter
 habitat <- test1$cutoff_40
 names(corolla_diam) <- names(habitat) <- rownames(test1)
 
 tree_pruned <- keep.tip(tree, rownames(test1))
 phylanova_results <- phylANOVA(tree_pruned, habitat, corolla_diam)
 
-plot_corolla40 <- ggplot(test1, aes(x=cutoff_40, y=exp(fm_scoring_corolla_diam), fill=cutoff_40)) + 
+plot_corolla40 <- ggplot(test1, aes(x=cutoff_40, y=exp(Mean.Corolla.Diameter), fill=cutoff_40)) + 
   geom_boxplot(lwd=0.3, outlier.size=0.25, alpha=0.8) + 
   #stat_compare_means(comparisons = 3) + # Add pairwise comparisons p-value
   #geom_jitter(colour = 2, alpha=0.3, size=0.9) +
@@ -79,18 +81,18 @@ plot_corolla40 <- ggplot(test1, aes(x=cutoff_40, y=exp(fm_scoring_corolla_diam),
 
 
 # 60% cutoff
-test1 <- subset_master_table[c("fm_scoring_corolla_diam","cutoff_60")]
-test1 <- subset(test1, !is.na(test1$fm_scoring_corolla_diam))
+test1 <- subset_master_table[c("Mean.Corolla.Diameter","cutoff_60")]
+test1 <- subset(test1, !is.na(test1$Mean.Corolla.Diameter))
 test1 <- subset(test1, !is.na(test1$cutoff_60))
 
-corolla_diam <- test1$fm_scoring_corolla_diam
+corolla_diam <- test1$Mean.Corolla.Diameter
 habitat <- test1$cutoff_60
 names(corolla_diam) <- names(habitat) <- rownames(test1)
 
 tree_pruned <- keep.tip(tree, rownames(test1))
 phylanova_results <- phylANOVA(tree_pruned, habitat, corolla_diam)
 
-plot_corolla60 <- ggplot(test1, aes(x=cutoff_60, y=exp(fm_scoring_corolla_diam), fill=cutoff_60)) + 
+plot_corolla60 <- ggplot(test1, aes(x=cutoff_60, y=exp(Mean.Corolla.Diameter), fill=cutoff_60)) + 
   geom_boxplot(lwd=0.3, outlier.size=0.25, alpha=0.8) + 
   #stat_compare_means(comparisons = 3) + # Add pairwise comparisons p-value
   #geom_jitter(colour = 2, alpha=0.3, size=0.9) +
@@ -114,11 +116,11 @@ dev.off()
 ##############################################################
 ##############################################################
 ### Habitat vs. seed length
-test2 <- subset_master_table[c("seed.length.mean","main_habitat")]
-test2 <- subset(test2, !is.na(test2$seed.length.mean))
+test2 <- subset_master_table[c("Mean.Seed.Length","main_habitat")]
+test2 <- subset(test2, !is.na(test2$Mean.Seed.Length))
 test2 <- subset(test2, !is.na(test2$main_habitat))
 
-seed_length <- test2$seed.length.mean
+seed_length <- test2$Mean.Seed.Length
 habitat <- test2$main_habitat
 names(seed_length) <- names(habitat) <- rownames(test2)
 
@@ -138,11 +140,11 @@ plot_seedlength50 <- ggplot(test2, aes(x=main_habitat, y=exp(seed_length), fill=
         axis.title.x = element_text(colour = 'black', size = 10)) 
 
 # 40% cutoff
-test2 <- subset_master_table[c("seed.length.mean","cutoff_40")]
-test2 <- subset(test2, !is.na(test2$seed.length.mean))
+test2 <- subset_master_table[c("Mean.Seed.Length","cutoff_40")]
+test2 <- subset(test2, !is.na(test2$Mean.Seed.Length))
 test2 <- subset(test2, !is.na(test2$cutoff_40))
 
-seed_length <- test2$seed.length.mean
+seed_length <- test2$Mean.Seed.Length
 habitat <- test2$cutoff_40
 names(seed_length) <- names(habitat) <- rownames(test2)
 
@@ -162,11 +164,11 @@ plot_seedlength40 <- ggplot(test2, aes(x=cutoff_40, y=exp(seed_length), fill=cut
         axis.title.x = element_text(colour = 'black', size = 10)) 
 
 # 60% cutoff
-test2 <- subset_master_table[c("seed.length.mean","cutoff_60")]
-test2 <- subset(test2, !is.na(test2$seed.length.mean))
+test2 <- subset_master_table[c("Mean.Seed.Length","cutoff_60")]
+test2 <- subset(test2, !is.na(test2$Mean.Seed.Length))
 test2 <- subset(test2, !is.na(test2$cutoff_60))
 
-seed_length <- test2$seed.length.mean
+seed_length <- test2$Mean.Seed.Length
 habitat <- test2$cutoff_60
 names(seed_length) <- names(habitat) <- rownames(test2)
 
@@ -191,18 +193,18 @@ dev.off()
 
 ###############################
 ### Habitat vs. seed number
-test3 <- subset_master_table[c("fm_scoring_seed_number","main_habitat")]
-test3 <- subset(test3, !is.na(test3$fm_scoring_seed_number))
+test3 <- subset_master_table[c("Mean.Seed.Number.per.Fruit","main_habitat")]
+test3 <- subset(test3, !is.na(test3$Mean.Seed.Number.per.Fruit))
 test3 <- subset(test3, !is.na(test3$main_habitat))
 
-seed_number <- test3$fm_scoring_seed_number
+seed_number <- test3$Mean.Seed.Number.per.Fruit
 habitat <- test3$main_habitat
 names(seed_number) <- names(habitat) <- rownames(test3)
 
 tree_pruned <- keep.tip(tree, rownames(test3))
 phylanova_results<-phylANOVA(tree_pruned, habitat, seed_number)
 
-plot_seednumber50 <- ggplot(test3, aes(x=main_habitat, y=exp(fm_scoring_seed_number), fill=main_habitat)) + 
+plot_seednumber50 <- ggplot(test3, aes(x=main_habitat, y=exp(Mean.Seed.Number.per.Fruit), fill=main_habitat)) + 
   geom_boxplot(lwd=0.3, outlier.size=0.25, alpha=0.8) + 
   scale_fill_manual( values = c("#66a182","#edae49")) +
   theme_bw(base_size = 8) + 
@@ -216,18 +218,18 @@ plot_seednumber50 <- ggplot(test3, aes(x=main_habitat, y=exp(fm_scoring_seed_num
 
 
 # 40% cutoff
-test3 <- subset_master_table[c("fm_scoring_seed_number","cutoff_40")]
-test3 <- subset(test3, !is.na(test3$fm_scoring_seed_number))
+test3 <- subset_master_table[c("Mean.Seed.Number.per.Fruit","cutoff_40")]
+test3 <- subset(test3, !is.na(test3$Mean.Seed.Number.per.Fruit))
 test3 <- subset(test3, !is.na(test3$cutoff_40))
 
-seed_number <- test3$fm_scoring_seed_number
+seed_number <- test3$Mean.Seed.Number.per.Fruit
 habitat <- test3$cutoff_40
 names(seed_number) <- names(habitat) <- rownames(test3)
 
 tree_pruned <- keep.tip(tree, rownames(test3))
 phylanova_results<-phylANOVA(tree_pruned, habitat, seed_number)
 
-plot_seednumber40 <- ggplot(test3, aes(x=cutoff_40, y=exp(fm_scoring_seed_number), fill=cutoff_40)) + 
+plot_seednumber40 <- ggplot(test3, aes(x=cutoff_40, y=exp(Mean.Seed.Number.per.Fruit), fill=cutoff_40)) + 
   geom_boxplot(lwd=0.3, outlier.size=0.25, alpha=0.8) + 
   scale_fill_manual( values = c("#66a182","#edae49")) +
   theme_bw(base_size = 8) + 
@@ -240,18 +242,18 @@ plot_seednumber40 <- ggplot(test3, aes(x=cutoff_40, y=exp(fm_scoring_seed_number
         axis.title.x = element_text(colour = 'black', size = 10)) 
 
 # 60% cutoff
-test3 <- subset_master_table[c("fm_scoring_seed_number","cutoff_60")]
-test3 <- subset(test3, !is.na(test3$fm_scoring_seed_number))
+test3 <- subset_master_table[c("Mean.Seed.Number.per.Fruit","cutoff_60")]
+test3 <- subset(test3, !is.na(test3$Mean.Seed.Number.per.Fruit))
 test3 <- subset(test3, !is.na(test3$cutoff_60))
 
-seed_length <- test3$fm_scoring_seed_number
+seed_length <- test3$Mean.Seed.Number.per.Fruit
 habitat <- test3$cutoff_60
 names(seed_length) <- names(habitat) <- rownames(test3)
 
 tree_pruned <- keep.tip(tree, rownames(test3))
 phylanova_results <- phylANOVA(tree_pruned, habitat, seed_length)
 
-plot_seednumber60 <- ggplot(test3, aes(x=cutoff_60, y=exp(fm_scoring_seed_number), fill=cutoff_60)) + 
+plot_seednumber60 <- ggplot(test3, aes(x=cutoff_60, y=exp(Mean.Seed.Number.per.Fruit), fill=cutoff_60)) + 
   geom_boxplot(lwd=0.3, outlier.size=0.25, alpha=0.8) + 
   scale_fill_manual( values = c("#66a182","#edae49")) +
   theme_bw(base_size = 8) + 
@@ -271,15 +273,15 @@ dev.off()
 ### Habitat vs. fruit type
 pal <- hcl.colors(5, palette = "Viridis", alpha = 0.7)
 
-test4 <- subset_master_table[c("fm_scoring_fruit","main_habitat")]
-test4 <- subset(test4, !is.na(test4$fm_scoring_fruit))
+test4 <- subset_master_table[c("Dry.or.Fleshy.Fruit","main_habitat")]
+test4 <- subset(test4, !is.na(test4$Dry.or.Fleshy.Fruit))
 test4 <- subset(test4, !is.na(test4$main_habitat))
 test4$species <- rownames(test4)
 
-dataset_traits <- test4[,c("species","fm_scoring_fruit","main_habitat")]
+dataset_traits <- test4[,c("species","Dry.or.Fleshy.Fruit","main_habitat")]
 tree_pruned <- keep.tip(tree, rownames(test4))
 
-t0 <- ggplot(dataset_traits, aes(x=fm_scoring_fruit, fill=main_habitat)) + 
+t0 <- ggplot(dataset_traits, aes(x=Dry.or.Fleshy.Fruit, fill=main_habitat)) + 
   geom_bar(position = "fill", alpha=0.8)+
   theme_bw(base_size = 8) +
   theme(legend.position = "none") + 
@@ -300,18 +302,18 @@ corhmm_tbl <- corHMM:::getModelTable(corhmm_fits)
 # conducting a lrt
 teststat <- -2 * (corhmm_tbl$lnLik[1] - corhmm_tbl$lnLik[2])
 p.val50 <- pchisq(teststat, df = 1, lower.tail = FALSE)
-print(p.val)
+print(p.val50)
 
 # 40% cutoff
-test4 <- subset_master_table[c("fm_scoring_fruit","cutoff_40")]
-test4 <- subset(test4, !is.na(test4$fm_scoring_fruit))
+test4 <- subset_master_table[c("Dry.or.Fleshy.Fruit","cutoff_40")]
+test4 <- subset(test4, !is.na(test4$Dry.or.Fleshy.Fruit))
 test4 <- subset(test4, !is.na(test4$cutoff_40))
 test4$species <- rownames(test4)
 
-dataset_traits <- test4[,c("species","fm_scoring_fruit","cutoff_40")]
+dataset_traits <- test4[,c("species","Dry.or.Fleshy.Fruit","cutoff_40")]
 tree_pruned <- keep.tip(tree, rownames(test4))
 
-t_40cutoff <- ggplot(dataset_traits, aes(x=fm_scoring_fruit, fill=cutoff_40)) + 
+t_40cutoff <- ggplot(dataset_traits, aes(x=Dry.or.Fleshy.Fruit, fill=cutoff_40)) + 
   geom_bar(position = "fill", alpha=0.8)+
   theme_bw(base_size = 8) +
   theme(legend.position = "none") + 
@@ -336,15 +338,15 @@ p.val40 <- pchisq(teststat, df = 1, lower.tail = FALSE)
 print(p.val40)
 
 # 60% cutoff
-test4 <- subset_master_table[c("fm_scoring_fruit","cutoff_60")]
-test4 <- subset(test4, !is.na(test4$fm_scoring_fruit))
+test4 <- subset_master_table[c("Dry.or.Fleshy.Fruit","cutoff_60")]
+test4 <- subset(test4, !is.na(test4$Dry.or.Fleshy.Fruit))
 test4 <- subset(test4, !is.na(test4$cutoff_60))
 test4$species <- rownames(test4)
 
-dataset_traits <- test4[,c("species","fm_scoring_fruit","cutoff_60")]
+dataset_traits <- test4[,c("species","Dry.or.Fleshy.Fruit","cutoff_60")]
 tree_pruned <- keep.tip(tree, rownames(test4))
 
-t_60cutoff <- ggplot(dataset_traits, aes(x=fm_scoring_fruit, fill=cutoff_60)) + 
+t_60cutoff <- ggplot(dataset_traits, aes(x=Dry.or.Fleshy.Fruit, fill=cutoff_60)) + 
   geom_bar(position = "fill", alpha=0.8)+
   theme_bw(base_size = 8) +
   theme(legend.position = "none") + 

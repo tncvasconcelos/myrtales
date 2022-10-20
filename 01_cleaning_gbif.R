@@ -381,6 +381,16 @@ names(all_cleaned_points) <- labels
 
 sum(unlist(lapply(all_cleaned_points, nrow)))
 
+# all_species <- c()
+# all_genera <- c()
+# for(i in 1:length(all_cleaned_points)) {
+#   all_species <- c(all_species, length(unique(all_cleaned_points[[i]]$scientificName)))
+#   all_genera <- c(all_genera, length(unique(all_cleaned_points[[i]]$genus)))
+# }
+# sum(all_species)
+# sum(all_genera)
+
+
 # Plotting to inspect distributions
 {; for(family_index in 1:length(all_cleaned_points)) {
   points_cleaned <- all_cleaned_points[[family_index]]

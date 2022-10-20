@@ -17,8 +17,9 @@ master_table_by_clade <- readRDS("datasets/Myrtales_by_clade_dataset.Rdata")
 ############################################
 ############################################
 # Vars to analyse
-div_model_var_to_keep <- c("most_common_life_form","fm_scoring_fruit","seed.length.mean",
-                           "niche_through_time","fm_scoring_seed_number","fm_scoring_corolla_diam",
+
+div_model_var_to_keep <- c("Most.Common.Life.Form","Dry.or.Fleshy.Fruit","Mean.Seed.Length",
+                           "niche_through_time","Mean.Seed.Number.per.Fruit","Mean.Corolla.Diameter",
                            "Vol", "CHELSA_bio10_01","CHELSA_bio10_02","CHELSA_bio10_10",
                            "CHELSA_bio10_11","CHELSA_bio10_12","CHELSA_bio10_15","CHELSA_bio10_16",
                            "CHELSA_bio10_17","GLOBAL_SLOPE_10MIN","depthtobedrock2", "meancarbon",
@@ -42,16 +43,7 @@ for(var_index_div in 1:length(div_model_var_to_keep)) {
     r.sq <- p <- slope <- n_points <- "fail"
     n_points <- length(model_div_full$residuals)
   } else {
-    
-    #div <- subset_master_table$div_rate_eps0.9
-    #lifeform <- subset_master_table$most_common_life_form
-    #names(div) <- names(lifeform) <- rownames(subset_master_table)
-    #pruned_tree <- keep.tip(tree, rownames(subset_master_table))
-    #x <- phylANOVA(pruned_tree, lifeform, div)
-    #boxplot(subset_master_table$div_rate_eps0.9~subset_master_table$most_common_life_form)
-    
-    #summary(model_div_full)
-    
+
     var <- div_model_var_to_keep[var_index_div]
     r.sq <- round(model_div_full$r.squared,3)
     p <- round(unname(summary(model_div_full)$coefficients[,4][2]),3)
