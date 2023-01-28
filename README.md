@@ -1,4 +1,4 @@
-Codes used in: The confluence of traits and environmental factors driving diversification and niche expansion in the globally distributed order Myrtales (in prep.)
+Codes used in: The confluence of traits and environmental factors driving diversification and niche expansion in the globally distributed order Myrtales (submitted)
 
 ----
 Description of folders: 
