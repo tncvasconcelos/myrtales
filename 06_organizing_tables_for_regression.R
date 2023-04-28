@@ -74,6 +74,7 @@ combined_table$CHELSA_bio10_11 <- combined_table$CHELSA_bio10_11+273.15
 #combined_table$div_rate_eps0.9 <- log(combined_table$div_rate_eps0.9)
 combined_table$Vol <- log(combined_table$Vol)
 combined_table$niche_through_time <- log(combined_table$niche_through_time)
+combined_table$div_rate_eps0.9 <- log(combined_table$div_rate_eps0.9) 
 
 # Abiotic:
 combined_table$CHELSA_bio10_01 <- log(combined_table$CHELSA_bio10_01)
